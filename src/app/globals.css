@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  border-color: theme("colors.ink" / 12%);
+}
+
+::selection {
+  background: theme("colors.accent");
+  color: theme("colors.paper");
+}

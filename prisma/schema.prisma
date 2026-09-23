@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentProviderStatus {
+  CREATED
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+}
+
+enum InventoryReason {
+  NEW_STOCK
+  SALE
+  ADJUSTMENT
+  DAMAGED
+  RETURNED
+}
+
+// ---------- Core ----------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  addresses         Address[]
+  orders            Order[]
+  cart              Cart?
+  couponUsages      CouponUsage[]
+  statusChangesMade OrderStatusHistory[] @relation("AdminStatusChanges")
+  inventoryChanges  InventoryHistory[]   @relation("AdminInventoryChanges")
+  resetTokens       PasswordResetToken[]
+
+  @@index([role])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName  String
+  phone     String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  isDefault Boolean @default(false)
+
+  @@index([userId])
+}
+
+// ---------- Catalog ----------
+
+model Category {
+  id       String     @id @default(cuid())
+  name     String
+  slug     String     @unique
+  parentId String?
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToCategory")
+  products Product[]
+
+  @@index([parentId])
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  sku               String   @unique
+  name              String
+  slug              String   @unique
+  brand             String?
+  categoryId        String
+  category          Category @relation(fields: [categoryId], references: [id])
+  description       String
+  specifications    Json?
+  mrp               Decimal  @db.Decimal(10, 2)
+  sellingPrice      Decimal  @db.Decimal(10, 2)
+  discountPct       Decimal  @default(0) @db.Decimal(5, 2)
+  stockQty          Int      @default(0)
+  lowStockThreshold Int      @default(5)
+  isActive          Boolean  @default(true)
+  isFeatured        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  images           ProductImage[]
+  cartItems        CartItem[]
+  orderItems       OrderItem[]
+  inventoryHistory InventoryHistory[]
+
+  @@index([categoryId])
+  @@index([isActive, isFeatured])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String?
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+}
+
+// ---------- Cart ----------
+
+model Cart {
+  id     String     @id @default(cuid())
+  userId String     @unique
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  CartItem[]
+
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+
+  @@unique([cartId, productId])
+}
+
+// ---------- Orders ----------
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  subtotal        Decimal       @db.Decimal(10, 2)
+  discountTotal   Decimal       @default(0) @db.Decimal(10, 2)
+  shippingFee     Decimal       @default(0) @db.Decimal(10, 2)
+  taxTotal        Decimal       @default(0) @db.Decimal(10, 2)
+  grandTotal      Decimal       @db.Decimal(10, 2)
+  paymentMethod   String
+  paymentStatus   PaymentStatus @default(PENDING)
+  status          OrderStatus   @default(PENDING)
+  shippingAddress Json
+  couponCode      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+  payments      Payment[]
+  couponUsage   CouponUsage?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id                  String  @id @default(cuid())
+  orderId             String
+  order               Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product @relation(fields: [productId], references: [id])
+  productNameSnapshot String
+  skuSnapshot         String
+  unitPriceAtPurchase Decimal @db.Decimal(10, 2)
+  quantity            Int
+  lineTotal           Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderStatusHistory {
+  id             String      @id @default(cuid())
+  orderId        String
+  order          Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus     OrderStatus
+  toStatus       OrderStatus
+  changedByAdminId String?
+  changedByAdmin User?       @relation("AdminStatusChanges", fields: [changedByAdminId], references: [id])
+  note           String?
+  createdAt      DateTime    @default(now())
+
+  @@index([orderId])
+}
+
+model Payment {
+  id          String                 @id @default(cuid())
+  orderId     String
+  order       Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider    String
+  amount      Decimal                @db.Decimal(10, 2)
+  status      PaymentProviderStatus  @default(CREATED)
+  providerRef String?
+  createdAt   DateTime               @default(now())
+
+  @@index([orderId])
+}
+
+// ---------- Promotions ----------
+
+model Coupon {
+  id            String     @id @default(cuid())
+  code          String     @unique
+  type          CouponType
+  value         Decimal    @db.Decimal(10, 2)
+  minOrderValue Decimal    @default(0) @db.Decimal(10, 2)
+  maxDiscount   Decimal?   @db.Decimal(10, 2)
+  startsAt      DateTime
+  expiresAt     DateTime
+  usageLimit    Int?
+  timesUsed     Int        @default(0)
+  isActive      Boolean    @default(true)
+
+  usages CouponUsage[]
+}
+
+model CouponUsage {
+  id        String   @id @default(cuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([couponId, userId])
+}
+
+// ---------- Inventory ----------
+
+model InventoryHistory {
+  id               String           @id @default(cuid())
+  productId        String
+  product          Product          @relation(fields: [productId], references: [id])
+  previousStock    Int
+  newStock         Int
+  quantityChanged  Int
+  reason           InventoryReason
+  adminId          String?
+  admin            User?            @relation("AdminInventoryChanges", fields: [adminId], references: [id])
+  createdAt        DateTime         @default(now())
+
+  @@index([productId])
+}
+
+// ---------- Site content ----------
+
+model HomepageBanner {
+  id        String  @id @default(cuid())
+  imageUrl  String
+  linkUrl   String?
+  title     String?
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+}
+
+model StoreSettings {
+  id                    String  @id @default(cuid())
+  storeName             String  @default("My Store")
+  logoUrl               String?
+  email                 String?
+  phone                 String?
+  whatsapp              String?
+  address               String?
+  currency              String  @default("INR")
+  shippingFee           Decimal @default(0) @db.Decimal(10, 2)
+  freeShippingThreshold Decimal? @db.Decimal(10, 2)
+  taxPercent            Decimal @default(0) @db.Decimal(5, 2)
+  socialLinks           Json?
+}
