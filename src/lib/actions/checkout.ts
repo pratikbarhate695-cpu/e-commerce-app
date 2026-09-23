@@ -163,7 +163,7 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
 
         return createdOrder;
       },
-      { isolation: Prisma.TransactionIsolationLevel.Serializable }
+      { maxWait: 5000, timeout: 10000, isolation: Prisma.TransactionIsolationLevel.Serializable }
     );
 
     return { ok: true, orderId: order.id, orderNumber: order.orderNumber };
