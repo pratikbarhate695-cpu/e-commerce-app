@@ -1,14 +1,17 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn, signOut, auth } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { credentialsSchema } from "@/lib/validation/auth";
 
 export type AdminLoginResult =
   | { ok: true }
   | { ok: false; error: string };
 
-export async function adminLogin(formData: FormData): Promise<AdminLoginResult> {
+export async function adminLogin(
+  formData: FormData
+): Promise<AdminLoginResult> {
   const parsed = credentialsSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -18,25 +21,34 @@ export async function adminLogin(formData: FormData): Promise<AdminLoginResult> 
     return { ok: false, error: "Enter a valid email and password." };
   }
 
+  const { email, password } = parsed.data;
+
+  // Verify that this account is actually an admin before creating
+  // the authentication session.
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { role: true },
+  });
+
+  if (!user || user.role !== "ADMIN") {
+    return {
+      ok: false,
+      error: "This account does not have admin access.",
+    };
+  }
+
   try {
     await signIn("credentials", {
-      email: parsed.data.email,
-      password: parsed.data.password,
+      email,
+      password,
       redirect: false,
     });
   } catch (err) {
     if (err instanceof AuthError) {
       return { ok: false, error: "Invalid email or password." };
     }
-    throw err;
-  }
 
-  // Credentials matched some user — but /admin/login only accepts ADMIN.
-  // Visiting the wrong URL should never cross-authenticate a customer.
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") {
-    await signOut({ redirect: false });
-    return { ok: false, error: "This account does not have admin access." };
+    throw err;
   }
 
   return { ok: true };
