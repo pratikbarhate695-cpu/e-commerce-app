@@ -56,7 +56,10 @@ enum InventoryReason {
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
-  passwordHash String
+  // Supabase Auth user id (auth.users.id). Set on first Supabase login.
+  supabaseId   String?  @unique
+  // Optional: Supabase now handles credentials. Kept until Auth.js is removed.
+  passwordHash String?
   name         String
   role         Role     @default(CUSTOMER)
   createdAt    DateTime @default(now())

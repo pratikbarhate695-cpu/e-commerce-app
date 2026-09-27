@@ -1,40 +1,35 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   const email = process.env.ADMIN_EMAIL;
-  const password = process.env.ADMIN_PASSWORD;
   const name = process.env.ADMIN_NAME ?? "Store Admin";
 
-  if (!email || !password) {
-    throw new Error(
-      "ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env before seeding."
-    );
+  if (!email) {
+    throw new Error("ADMIN_EMAIL must be set in .env before seeding.");
   }
 
-  if (password.length < 8) {
-    throw new Error("ADMIN_PASSWORD must be at least 8 characters.");
-  }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  const admin = await prisma.user.upsert({
-    where: { email },
-    update: {
-      // Re-running the seed refreshes the hash if ADMIN_PASSWORD changed,
-      // but never downgrades an existing admin's role.
-      passwordHash,
-      name,
-    },
-    create: {
-      email,
-      passwordHash,
-      name,
-      role: "ADMIN",
-    },
+  // Passwords now live in Supabase Auth, not in this database. This only
+  // makes sure a Prisma user with the ADMIN role exists for that email.
+  // The admin still has to be created in Supabase (see AUTH.md).
+  const existing = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
   });
+
+  const admin = existing
+    ? await prisma.user.update({
+        where: { id: existing.id },
+        data: { role: "ADMIN", name },
+      })
+    : await prisma.user.create({
+        data: {
+          email: email.toLowerCase(),
+          name,
+          role: "ADMIN",
+          cart: { create: {} },
+        },
+      });
 
   // Single-row store settings, created once if missing.
   const existingSettings = await prisma.storeSettings.findFirst();
@@ -132,7 +127,7 @@ async function main() {
   console.log(`Seeded admin user: ${admin.email} (id: ${admin.id})`);
   console.log("Seeded sample category, products, and a WELCOME10 coupon.");
   console.log(
-    "Reminder: ADMIN_PASSWORD was only read here to create the hash above — rotate it in your secrets manager for production."
+    "Reminder: create this admin in Supabase Auth and mark it admin — see AUTH.md."
   );
 }
 

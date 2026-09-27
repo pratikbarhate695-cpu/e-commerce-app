@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/session";
 
 export default async function StorefrontLayout({
   children,

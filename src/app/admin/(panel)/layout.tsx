@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { signOut } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/session";
+import { createClient } from "@/lib/supabase/server";
 
 const links = [
   { href: "/admin/dashboard", label: "Dashboard" },
@@ -13,14 +15,20 @@ const links = [
   { href: "/admin/settings", label: "Settings" },
 ];
 
-export default function AdminPanelLayout({
+export default async function AdminPanelLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Server-side check on top of middleware: the Prisma role has the final say.
+  const session = await auth();
+  if (session?.user.role !== "ADMIN") redirect("/admin/login");
+
   async function signOutAction() {
     "use server";
-    await signOut({ redirectTo: "/admin/login" });
+    // scope "local": sign out this device only, not every session.
+    await createClient().auth.signOut({ scope: "local" });
+    redirect("/admin/login");
   }
 
   return (

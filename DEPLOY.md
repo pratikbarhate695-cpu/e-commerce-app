@@ -1,3 +1,5 @@
+> **Authentication now uses Supabase Auth.** Where this guide mentions `AUTH_SECRET`, `ADMIN_PASSWORD` or password-reset emails, follow [`AUTH.md`](./AUTH.md) instead.
+
 # Phase 4 — Deploying to Netlify with a Production Database
 
 This is a from-scratch walkthrough: no assumptions that anything is set up

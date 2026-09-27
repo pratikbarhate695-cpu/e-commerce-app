@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/session";
 import { getCart } from "@/lib/actions/cart";
 import { CartLine } from "@/components/storefront/cart-line";
 import { formatMoney } from "@/lib/format";

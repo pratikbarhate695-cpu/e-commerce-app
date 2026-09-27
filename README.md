@@ -1,3 +1,5 @@
+> **Authentication now uses Supabase Auth.** Where this guide mentions `AUTH_SECRET`, `ADMIN_PASSWORD` or password-reset emails, follow [`AUTH.md`](./AUTH.md) instead.
+
 # Phase 1 — Project Setup, Schema, Auth, Seed Admin
 
 ## What's in this phase

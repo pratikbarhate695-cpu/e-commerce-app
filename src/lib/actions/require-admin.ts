@@ -1,5 +1,5 @@
 import "server-only";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/session";
 
 export class UnauthorizedError extends Error {
   constructor(message = "Not authorized.") {

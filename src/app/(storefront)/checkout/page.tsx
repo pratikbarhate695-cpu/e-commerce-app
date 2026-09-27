@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/session";
 import { getCart } from "@/lib/actions/cart";
 import { getStoreSettings } from "@/lib/catalog";
 import { computeCartTotals } from "@/lib/pricing";
