@@ -18,15 +18,22 @@ export async function GET(request: Request) {
   const failure = isRecovery ? "/admin/login?error=recovery" : "/login?error=google";
 
   // The user pressed "Cancel" at Google, or Google reported a problem.
-  if (requestUrl.searchParams.get("error")) {
-    return NextResponse.redirect(`${requestUrl.origin}${failure}`);
+  const providerError = requestUrl.searchParams.get("error");
+  if (providerError) {
+    const why =
+      requestUrl.searchParams.get("error_description") ?? providerError;
+    return NextResponse.redirect(
+      `${requestUrl.origin}${failure}&reason=${encodeURIComponent(why.slice(0, 160))}`
+    );
   }
 
   if (code) {
     const supabase = createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
-      return NextResponse.redirect(`${requestUrl.origin}${failure}`);
+      return NextResponse.redirect(
+        `${requestUrl.origin}${failure}&reason=${encodeURIComponent(error.message.slice(0, 160))}`
+      );
     }
   }
 

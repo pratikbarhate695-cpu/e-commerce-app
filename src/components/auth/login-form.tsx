@@ -24,7 +24,11 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(
-    params.get("error") === "google" ? "Google sign-in did not finish. Please try again." : null
+    params.get("error") === "google"
+      ? `Google sign-in did not finish. Please try again.${params.get("reason") ? " Reason: " + params.get("reason") : ""}`
+      : params.get("error") === "account"
+        ? "We could not match this sign-in to your account. Sign in the same way you used when you ordered (email code or Google)."
+        : null
   );
   const [busy, setBusy] = useState(false);
   const [cooldown, setCooldown] = useState(0);
