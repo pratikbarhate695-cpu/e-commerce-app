@@ -1,0 +1,10 @@
+sku: SAM-BUDS 3-WHITE
+name: Samsung Galaxy Buds 3 White
+slug: samsung-galaxy-buds 3-white
+brand: Samsung
+category: Audio
+mrp: 12880
+price: 11880
+stock: 3
+low_stock: 2
+description: Discover Samsung Galaxy Buds3 White wireless earbuds, designed for everyday listening and convenient wireless connectivity. Features include an open-type design and touch controls. Confirm the exact model, authenticity and warranty with the supplier before purchasing.

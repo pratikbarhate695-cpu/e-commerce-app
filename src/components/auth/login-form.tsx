@@ -23,7 +23,9 @@ export function LoginForm() {
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    params.get("error") === "google" ? "Google sign-in did not finish. Please try again." : null
+  );
   const [busy, setBusy] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
@@ -117,7 +119,7 @@ export function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
         />
         {error && (
-          <p role="alert" className="text-sm text-red-700">
+          <p role="alert" className="text-sm text-red-700 dark:text-red-300">
             {error}
           </p>
         )}
@@ -145,7 +147,7 @@ export function LoginForm() {
         onChange={(e) => setCode(e.target.value)}
       />
       {error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-red-700 dark:text-red-300">
           {error}
         </p>
       )}

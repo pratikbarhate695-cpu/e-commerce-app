@@ -14,7 +14,10 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:backup-products": "tsx prisma/import-backup-products.ts",
+    "db:backup-products:dry": "tsx prisma/import-backup-products.ts --dry",
+    "db:check": "tsx scripts/db-check.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

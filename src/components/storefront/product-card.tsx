@@ -20,7 +20,7 @@ export function ProductCard({ product }: Props) {
             alt={image.altText ?? product.name}
             width={480}
             height={600}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-ink/40">

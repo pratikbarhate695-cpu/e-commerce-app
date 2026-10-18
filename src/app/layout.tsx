@@ -12,10 +12,12 @@ const sans = Inter({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: "Store",
-  description: "An online store.",
+export const metadata = {
+  title: "Zero Integration",
+  description: "Shop authentic products at Zero Integration",
 };
+
+const themeScript = `(function(){try{var s=localStorage.getItem("zero-integration-theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -23,7 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="en" className={`${serif.variable} ${sans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="bg-paper text-ink font-sans antialiased">
         {children}
       </body>

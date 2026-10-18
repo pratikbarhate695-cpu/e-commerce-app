@@ -49,7 +49,7 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
           defaultValue={settings.freeShippingThreshold ? String(settings.freeShippingThreshold) : ""}
         />
       </div>
-      {state && !state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {state && !state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
       {state && state.ok && <p className="text-sm text-accent">Saved.</p>}
       <AdminSubmitButton>Save settings</AdminSubmitButton>
     </form>

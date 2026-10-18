@@ -36,7 +36,7 @@ export function InventoryAdjustForm({ products }: { products: Product[] }) {
         <option value="DAMAGED">Damaged</option>
         <option value="RETURNED">Returned</option>
       </AdminSelect>
-      {!state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
       <AdminSubmitButton>Apply</AdminSubmitButton>
     </form>
   );

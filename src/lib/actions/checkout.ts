@@ -7,6 +7,13 @@ import { checkoutSchema } from "@/lib/validation/checkout";
 import { computeCartTotals, PricingError } from "@/lib/pricing";
 import { adjustStock } from "@/lib/inventory";
 import { generateOrderNumber } from "@/lib/order-number";
+import { expireUnpaidOrders } from "@/lib/payments";
+import {
+  MIN_AMOUNT_MESSAGE,
+  MIN_ONLINE_PAYMENT_PAISE,
+  razorpayConfigured,
+  toPaise,
+} from "@/lib/razorpay";
 
 export type CheckoutResult =
   | { ok: true; orderId: string; orderNumber: string }
@@ -21,6 +28,28 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
       return { ok: false, error: "Please sign in to check out." };
     }
     throw err;
+  }
+
+  if (!razorpayConfigured()) {
+    return { ok: false, error: "Online payment is not set up yet. Please try again later." };
+  }
+  // Release stock held by old unpaid orders before checking stock again.
+  await expireUnpaidOrders(user.id);
+
+  // Stops someone from locking your stock with many unpaid orders.
+  const unpaidCount = await prisma.order.count({
+    where: {
+      userId: user.id,
+      paymentMethod: "RAZORPAY",
+      status: "PENDING",
+      paymentStatus: { in: ["PENDING", "FAILED"] },
+    },
+  });
+  if (unpaidCount >= 3) {
+    return {
+      ok: false,
+      error: "You already have unpaid orders. Please pay for them from your orders page, or wait 30 minutes.",
+    };
   }
 
   const raw = {
@@ -82,16 +111,29 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
     return { ok: false, error: totals.couponError };
   }
 
+  // Check the amount BEFORE creating anything, so Razorpay never rejects an order we already saved.
+  if (toPaise(totals.grandTotal) < MIN_ONLINE_PAYMENT_PAISE) {
+    return { ok: false, error: MIN_AMOUNT_MESSAGE };
+  }
+
   try {
     const order = await prisma.$transaction(
       async (tx) => {
-        // Re-check stock inside the transaction against live rows, so two
-        // simultaneous checkouts on the last unit can't both succeed.
+        // Take the cart first. If another checkout already took it (double click,
+        // two tabs), the count differs and this one stops, so no duplicate order.
+        const claimed = await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+        if (claimed.count !== cart.items.length) {
+          throw new PricingError("Your cart changed. Please review it and try again.");
+        }
+
+        // Re-check stock inside the transaction against live rows (one query for all lines).
+        const fresh = await tx.product.findMany({
+          where: { id: { in: totals.lines.map((l) => l.productId) } },
+        });
+        const freshById = new Map(fresh.map((p) => [p.id, p]));
         for (const line of totals.lines) {
-          const fresh = await tx.product.findUniqueOrThrow({
-            where: { id: line.productId },
-          });
-          if (!fresh.isActive || fresh.stockQty < line.quantity) {
+          const p = freshById.get(line.productId);
+          if (!p || !p.isActive || p.stockQty < line.quantity) {
             throw new PricingError(
               `"${line.name}" no longer has enough stock — please update your cart.`
             );
@@ -132,12 +174,12 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
               create: {
                 fromStatus: "PENDING",
                 toStatus: "PENDING",
-                note: "Order placed.",
+                note: "Order placed. Waiting for payment.",
               },
             },
             payments: {
               create: {
-                provider: "cod",
+                provider: "razorpay",
                 amount: totals.grandTotal,
                 status: "CREATED",
               },
@@ -159,11 +201,13 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
           });
         }
 
-        await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
         return createdOrder;
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        maxWait: 20000,
+        timeout: 60000,
+      }
     );
 
     return { ok: true, orderId: order.id, orderNumber: order.orderNumber };

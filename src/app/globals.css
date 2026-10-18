@@ -4,13 +4,27 @@
 
 :root {
   color-scheme: light;
+  --color-ink: 27 27 24;
+  --color-paper: 251 250 247;
+  --color-accent: 47 93 76;
 }
 
-* {
-  border-color: theme("colors.ink" / 12%);
+html.dark {
+  color-scheme: dark;
+  --color-ink: 235 235 230;
+  --color-paper: 18 20 22;
+  --color-accent: 115 183 151;
 }
+
+* { border-color: rgb(var(--color-ink) / 0.12); }
+html.dark input, html.dark textarea, html.dark select {
+  color: rgb(var(--color-ink));
+  background-color: #24272a;
+  border-color: rgb(var(--color-ink) / 0.2);
+}
+html.dark input::placeholder, html.dark textarea::placeholder { color: rgb(var(--color-ink) / 0.45); }
 
 ::selection {
-  background: theme("colors.accent");
-  color: theme("colors.paper");
+  background: rgb(var(--color-accent));
+  color: rgb(var(--color-paper));
 }

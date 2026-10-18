@@ -27,7 +27,7 @@ export function BannerForm() {
       <AdminField label="Link URL (optional)" name="linkUrl" placeholder="/shop" />
       <AdminField label="Sort order" name="sortOrder" type="number" defaultValue={0} />
       <AdminCheckbox label="Active" name="isActive" defaultChecked />
-      {!state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
       <AdminSubmitButton>Add banner</AdminSubmitButton>
     </form>
   );

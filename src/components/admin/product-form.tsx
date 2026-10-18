@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import {
   AdminCheckbox,
 } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
+import { ImagePicker } from "@/components/ui/image-picker";
 import type { AdminActionResult } from "@/lib/actions/admin/products";
 import { deleteProductImage } from "@/lib/actions/admin/products";
 
@@ -30,9 +31,16 @@ type Props = {
 export function ProductForm({ mode, categories, product, action }: Props) {
   const router = useRouter();
   const [state, formAction] = useFormState(action, initialState);
+  // Changing this key empties the image picker after a successful save,
+  // so the same images are not uploaded twice.
+  const [pickerKey, setPickerKey] = useState(0);
 
   useEffect(() => {
-    if (state.ok && mode === "new") {
+    if (state !== initialState && state.ok) setPickerKey((k) => k + 1);
+  }, [state]);
+
+  useEffect(() => {
+    if (state.ok && state.created && mode === "new") {
       router.push("/admin/products");
     }
   }, [state, mode, router]);
@@ -77,6 +85,14 @@ export function ProductForm({ mode, categories, product, action }: Props) {
         required
         rows={4}
         defaultValue={product?.description}
+      />
+
+      <AdminTextarea
+        label="Key features (bullet points, one per line)"
+        name="highlights"
+        rows={5}
+        placeholder={"Active noise cancellation\n30 hours battery life\nIPX4 water resistant"}
+        defaultValue={product?.highlights?.join("\n") ?? ""}
       />
 
       <div className="grid grid-cols-3 gap-4">
@@ -154,7 +170,7 @@ export function ProductForm({ mode, categories, product, action }: Props) {
                   alt={img.altText ?? product.name}
                   width={80}
                   height={100}
-                  className="h-24 w-20 object-cover"
+                  className="h-24 w-20 object-contain"
                 />
                 <button
                   type="button"
@@ -170,20 +186,15 @@ export function ProductForm({ mode, categories, product, action }: Props) {
         </div>
       )}
 
-      <label className="block">
-        <span className="text-sm text-ink/60">
-          {mode === "new" ? "Images" : "Add images"}
-        </span>
-        <input
-          type="file"
-          name="images"
-          accept="image/*"
-          multiple
-          className="mt-1 block w-full text-sm"
-        />
-      </label>
+      <ImagePicker
+        key={pickerKey}
+        name="images"
+        max={10}
+        label={mode === "new" ? "Images" : "Add images"}
+        hint="Click Add again to pick more images. The first image is the main one."
+      />
 
-      {!state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
 
       <AdminSubmitButton>{mode === "new" ? "Create product" : "Save changes"}</AdminSubmitButton>
     </form>

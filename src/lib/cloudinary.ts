@@ -19,7 +19,7 @@ function sign(params: Record<string, string | number>, apiSecret: string) {
  * FormData) to Cloudinary using a signed request. Never exposes the API
  * secret to the client — the signature is computed here, server-side.
  */
-export async function uploadProductImage(file: File): Promise<UploadResult> {
+export async function uploadImage(file: File, folder: string): Promise<UploadResult> {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -29,14 +29,14 @@ export async function uploadProductImage(file: File): Promise<UploadResult> {
   }
 
   const timestamp = Math.floor(Date.now() / 1000);
-  const paramsToSign = { timestamp, folder: "products" };
+  const paramsToSign = { timestamp, folder };
   const signature = sign(paramsToSign, apiSecret);
 
   const body = new FormData();
   body.set("file", file);
   body.set("api_key", apiKey);
   body.set("timestamp", String(timestamp));
-  body.set("folder", "products");
+  body.set("folder", folder);
   body.set("signature", signature);
 
   const res = await fetch(
@@ -51,4 +51,12 @@ export async function uploadProductImage(file: File): Promise<UploadResult> {
 
   const data = await res.json();
   return { secureUrl: data.secure_url, publicId: data.public_id };
+}
+
+export function uploadProductImage(file: File): Promise<UploadResult> {
+  return uploadImage(file, "products");
+}
+
+export function uploadReviewImage(file: File): Promise<UploadResult> {
+  return uploadImage(file, "reviews");
 }

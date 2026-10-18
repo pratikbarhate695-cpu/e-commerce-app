@@ -1,29 +1,36 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { placeOrder } from "@/lib/actions/checkout";
+import { payForOrder } from "@/components/storefront/razorpay-client";
 
 export function CheckoutForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setPending] = useState(false);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setPending(true);
     const formData = new FormData(e.currentTarget);
 
-    startTransition(async () => {
-      const result = await placeOrder(formData);
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      router.push(`/account/orders/${result.orderId}?placed=1`);
-    });
+    const result = await placeOrder(formData);
+    if (!result.ok) {
+      setError(result.error);
+      setPending(false);
+      return;
+    }
+
+    // Order is saved as "payment pending". Open the payment window now.
+    // If it is closed or fails, the order page has a "Pay now" button.
+    const paid = await payForOrder(result.orderId);
+    const q = new URLSearchParams({ placed: "1" });
+    if (!paid.ok) q.set("perr", paid.error.slice(0, 200));
+    router.push(`/account/orders/${result.orderId}?${q.toString()}`);
   }
 
   return (
@@ -43,18 +50,19 @@ export function CheckoutForm() {
 
       <fieldset>
         <legend className="mb-2 text-sm text-ink/60">Payment method</legend>
-        <input type="hidden" name="paymentMethod" value="COD" />
+        <input type="hidden" name="paymentMethod" value="RAZORPAY" />
         <p className="text-sm text-ink/80">
-          Cash on delivery — pay when your order arrives.
+          Pay online with UPI, card or net banking. Your order is shipped after
+          payment is confirmed.
         </p>
       </fieldset>
 
       <Field label="Coupon code (optional)" name="couponCode" />
 
-      {error && <p className="text-sm text-red-700">{error}</p>}
+      {error && <p className="text-sm text-red-700 dark:text-red-300">{error}</p>}
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Placing order…" : "Place order"}
+        {isPending ? "Please wait…" : "Pay and place order"}
       </Button>
     </form>
   );

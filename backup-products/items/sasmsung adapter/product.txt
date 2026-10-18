@@ -1,0 +1,10 @@
+sku: SAM-25W-PD-ADAPTER
+name: Samsung 25W USB-C PD Travel Adapter
+slug: samsung-25w-usb-c-pd-travel-adapter
+brand: Samsung
+category: Chargers
+mrp: 2429
+price: 1429
+stock: 3
+low_stock: 2
+description: Charge compatible devices with the Samsung 25W USB-C PD travel adapter. Supports USB Power Delivery 3.0 PPS fast charging on compatible devices. Verify product authenticity, cable inclusion, compatibility and warranty before purchasing.

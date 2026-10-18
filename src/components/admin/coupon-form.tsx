@@ -31,7 +31,7 @@ export function CouponForm() {
       </div>
       <AdminField label="Usage limit (optional)" name="usageLimit" type="number" min={1} />
       <AdminCheckbox label="Active" name="isActive" defaultChecked />
-      {!state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
       <AdminSubmitButton>Create coupon</AdminSubmitButton>
     </form>
   );

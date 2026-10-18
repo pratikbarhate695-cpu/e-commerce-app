@@ -1,0 +1,13 @@
+sku: SAM-S25FE-NAVY
+name: Samsung Galaxy S25 FE (Navy)
+slug: samsung-galaxy-s25-fe-navy
+brand: Samsung
+category: Smartphones
+mrp: 59999
+price: 49999
+stock: 10
+low_stock: 3
+featured: yes
+active: yes
+description: Write the product text here.
+You can use many lines. Everything after "description:" is the description.

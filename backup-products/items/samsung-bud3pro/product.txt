@@ -1,0 +1,11 @@
+sku: SAM-BUDS3-PRO-SILVER
+name: Samsung Galaxy Buds3 Pro Silver
+slug: samsung-galaxy-buds3-pro-silver
+brand: Samsung
+category: Audio
+mrp: 12880
+price: 11880
+stock: 3
+low_stock: 2
+description: Experience premium wireless audio with Samsung Galaxy Buds3 Pro Silver. Features include active noise cancellation, enhanced speakers and 360 Audio. Verify the exact model, product authenticity, availability and warranty with the supplier before purchasing.
+

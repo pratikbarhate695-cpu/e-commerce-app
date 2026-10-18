@@ -93,8 +93,10 @@ export const orderStatusOptions = [
   "CONFIRMED",
   "PROCESSING",
   "SHIPPED",
+  "OUT_FOR_DELIVERY",
   "DELIVERED",
   "CANCELLED",
+  "RETURNED",
   "REFUNDED",
 ] as const;
 
@@ -102,5 +104,9 @@ export const orderStatusUpdateSchema = z.object({
   orderId: z.string().min(1),
   status: z.enum(orderStatusOptions),
   note: z.string().trim().max(500).optional().or(z.literal("")),
+  courierName: z.string().trim().max(120).optional().or(z.literal("")),
+  trackingNumber: z.string().trim().max(200).optional().or(z.literal("")),
+  trackingUrl: z.string().trim().max(500).optional().or(z.literal("")),
+  estimatedDelivery: z.string().trim().optional().or(z.literal("")),
 });
 export type OrderStatusUpdateInput = z.infer<typeof orderStatusUpdateSchema>;

@@ -11,22 +11,40 @@ const STATUSES: OrderStatus[] = [
   "CONFIRMED",
   "PROCESSING",
   "SHIPPED",
+  "OUT_FOR_DELIVERY",
   "DELIVERED",
   "CANCELLED",
+  "RETURNED",
   "REFUNDED",
 ];
 
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; q?: string }>;
 }) {
   await requireAdmin();
-  const { status } = await searchParams;
+  const { status, q: rawQ } = await searchParams;
   const activeStatus = STATUSES.find((s) => s === status);
+  const q = rawQ?.trim();
+
+  // Carries the active status filter along when a tab link is clicked
+  // while a search is active, and vice versa.
+  const qSuffix = q ? `&q=${encodeURIComponent(q)}` : "";
 
   const orders = await prisma.order.findMany({
-    where: activeStatus ? { status: activeStatus } : undefined,
+    where: {
+      ...(activeStatus ? { status: activeStatus } : {}),
+      ...(q
+        ? {
+            OR: [
+              { orderNumber: { contains: q, mode: "insensitive" as const } },
+              { user: { email: { contains: q, mode: "insensitive" as const } } },
+              { user: { name: { contains: q, mode: "insensitive" as const } } },
+            ],
+          }
+        : {}),
+    },
     include: { user: true },
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -36,9 +54,26 @@ export default async function AdminOrdersPage({
     <div>
       <AdminHeader title="Orders" />
       <div className="px-8 py-6">
-        <div className="flex flex-wrap gap-2 text-xs">
+        <form method="get" className="flex max-w-sm gap-2">
+          {activeStatus && <input type="hidden" name="status" value={activeStatus} />}
+          <input
+            type="search"
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Search order #, customer name or email"
+            className="w-full border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+          <button
+            type="submit"
+            className="shrink-0 bg-ink px-3 py-2 text-sm text-paper"
+          >
+            Search
+          </button>
+        </form>
+
+        <div className="mt-4 flex flex-wrap gap-2 text-xs">
           <Link
-            href="/admin/orders"
+            href={`/admin/orders${q ? `?q=${encodeURIComponent(q)}` : ""}`}
             className={`px-2 py-1 ${!activeStatus ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/60"}`}
           >
             All
@@ -46,7 +81,7 @@ export default async function AdminOrdersPage({
           {STATUSES.map((s) => (
             <Link
               key={s}
-              href={`/admin/orders?status=${s}`}
+              href={`/admin/orders?status=${s}${qSuffix}`}
               className={`px-2 py-1 ${activeStatus === s ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/60"}`}
             >
               {s}
@@ -72,7 +107,10 @@ export default async function AdminOrdersPage({
                     {order.orderNumber}
                   </Link>
                 </td>
-                <td className="py-3 text-ink/70">{order.user.email}</td>
+                <td className="py-3 text-ink/70">
+                  {order.user.name}
+                  <span className="block text-xs text-ink/40">{order.user.email}</span>
+                </td>
                 <td className="py-3 text-ink/70">{formatMoney(order.grandTotal)}</td>
                 <td className="py-3">
                   <OrderStatusBadge status={order.status} />

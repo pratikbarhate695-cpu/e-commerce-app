@@ -45,7 +45,7 @@ export default async function AdminProductsPage({
             name="q"
             defaultValue={q}
             placeholder="Search by name"
-            className="w-full border border-ink/15 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-accent"
           />
         </form>
 

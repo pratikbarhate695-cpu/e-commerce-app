@@ -1,0 +1,13 @@
+sku: SAM-S25FE-256-BLK
+name: Samsung S25 FE JetBlack
+slug: samsung-s25-fe-jetblack
+brand: Samsung
+category: Smartphones
+mrp: 65000
+price: 63000
+stock: 3
+low_stock: 2
+discount: 6
+active: true
+featured: false
+description: Samsung S25 FE JetBlack smartphone.

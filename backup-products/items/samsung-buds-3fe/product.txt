@@ -1,0 +1,10 @@
+sku: SAM-BUDS-FE-GRAPHITE
+name: Samsung Galaxy Buds FE Graphite
+slug: samsung-galaxy-buds-fe-graphite
+brand: Samsung
+category: Audio
+mrp: 6500
+price: 5500
+stock: 3
+low_stock: 2
+description: Enjoy immersive audio with Samsung Galaxy Buds FE Graphite wireless earbuds. Features include active noise cancellation, an ergonomic wingtip design, ambient sound and touch controls. Confirm product authenticity, exact model and warranty with the supplier before purchasing.

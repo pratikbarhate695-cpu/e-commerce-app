@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
+import { GoogleButton } from "@/components/auth/google-button";
 
 export default function LoginPage() {
   return (
@@ -12,6 +13,12 @@ export default function LoginPage() {
       </p>
       <div className="mt-10">
         <Suspense>
+          <GoogleButton />
+          <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wide text-ink/40">
+            <span className="h-px flex-1 bg-ink/15" />
+            or
+            <span className="h-px flex-1 bg-ink/15" />
+          </div>
           <LoginForm />
         </Suspense>
       </div>

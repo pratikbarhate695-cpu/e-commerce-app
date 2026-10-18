@@ -1,8 +1,8 @@
 const TONES = {
   neutral: "bg-ink/[0.06] text-ink/70",
-  good: "bg-emerald-100 text-emerald-800",
-  warn: "bg-amber-100 text-amber-800",
-  bad: "bg-red-100 text-red-800",
+  good: "bg-emerald-100 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300",
+  warn: "bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300",
+  bad: "bg-red-100 text-red-800 dark:bg-red-400/15 dark:text-red-300",
 } as const;
 
 export function Badge({
@@ -24,8 +24,10 @@ const ORDER_STATUS_TONE: Record<string, keyof typeof TONES> = {
   CONFIRMED: "neutral",
   PROCESSING: "warn",
   SHIPPED: "warn",
+  OUT_FOR_DELIVERY: "warn",
   DELIVERED: "good",
   CANCELLED: "bad",
+  RETURNED: "bad",
   REFUNDED: "bad",
 };
 

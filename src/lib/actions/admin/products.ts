@@ -6,7 +6,17 @@ import { requireAdmin } from "@/lib/actions/require-admin";
 import { productSchema } from "@/lib/validation/admin";
 import { uploadProductImage } from "@/lib/cloudinary";
 
-export type AdminActionResult = { ok: true } | { ok: false; error: string };
+export type AdminActionResult = { ok: true; created?: boolean } | { ok: false; error: string };
+
+/** One bullet per line. Blank lines removed, max 12 bullets of 160 characters. */
+function parseHighlights(formData: FormData): string[] {
+  return String(formData.get("highlights") ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[\s\-•*]+/, "").trim())
+    .filter(Boolean)
+    .slice(0, 12)
+    .map((line) => line.slice(0, 160));
+}
 
 function parseProductForm(formData: FormData) {
   return productSchema.safeParse({
@@ -45,23 +55,47 @@ export async function createProduct(
   if (skuTaken) return { ok: false, error: "That SKU is already in use." };
   if (slugTaken) return { ok: false, error: "That slug is already in use." };
 
-  const product = await prisma.product.create({
-    data: {
-      sku: data.sku,
-      name: data.name,
-      slug: data.slug,
-      brand: data.brand || null,
-      categoryId: data.categoryId,
-      description: data.description,
-      mrp: data.mrp,
-      sellingPrice: data.sellingPrice,
-      discountPct: data.discountPct || 0,
-      stockQty: data.stockQty,
-      lowStockThreshold: data.lowStockThreshold,
-      isActive: data.isActive,
-      isFeatured: data.isFeatured,
-    },
-  });
+  const images = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  let uploaded: Awaited<ReturnType<typeof uploadProductImage>>[] = [];
+  if (images.length > 0) {
+    try {
+      uploaded = await Promise.all(images.map((f) => uploadProductImage(f)));
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error
+          ? `Product image upload failed: ${error.message}`
+          : "Product image upload failed. Check Cloudinary settings and try again.",
+      };
+    }
+  }
+
+  let product: Awaited<ReturnType<typeof prisma.product.create>>;
+  try {
+    product = await prisma.product.create({
+      data: {
+        sku: data.sku,
+        name: data.name,
+        slug: data.slug,
+        brand: data.brand || null,
+        categoryId: data.categoryId,
+        description: data.description,
+        mrp: data.mrp,
+        sellingPrice: data.sellingPrice,
+        discountPct: data.discountPct || 0,
+        stockQty: data.stockQty,
+        lowStockThreshold: data.lowStockThreshold,
+        isActive: data.isActive,
+        isFeatured: data.isFeatured,
+        highlights: parseHighlights(formData),
+      },
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Could not create product.",
+    };
+  }
 
   if (data.stockQty > 0) {
     await prisma.inventoryHistory.create({
@@ -75,9 +109,7 @@ export async function createProduct(
     });
   }
 
-  const images = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
-  if (images.length > 0) {
-    const uploaded = await Promise.all(images.map((f) => uploadProductImage(f)));
+  if (uploaded.length > 0) {
     await prisma.productImage.createMany({
       data: uploaded.map((img, i) => ({
         productId: product.id,
@@ -88,7 +120,10 @@ export async function createProduct(
   }
 
   revalidatePath("/admin/products");
-  return { ok: true };
+  revalidatePath("/shop");
+  revalidatePath("/");
+  revalidatePath(`/product/${data.slug}`);
+  return { ok: true, created: true };
 }
 
 export async function updateProduct(
@@ -130,6 +165,7 @@ export async function updateProduct(
         lowStockThreshold: data.lowStockThreshold,
         isActive: data.isActive,
         isFeatured: data.isFeatured,
+        highlights: parseHighlights(formData),
         // stockQty is deliberately NOT editable here — stock changes go
         // through the Inventory panel so every change is audited.
       },

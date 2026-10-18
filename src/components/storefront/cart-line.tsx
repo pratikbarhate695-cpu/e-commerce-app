@@ -45,7 +45,7 @@ export function CartLine({ item }: Props) {
             alt={image.altText ?? item.product.name}
             width={80}
             height={100}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
           />
         )}
       </div>

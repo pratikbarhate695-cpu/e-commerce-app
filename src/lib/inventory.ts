@@ -15,24 +15,22 @@ export async function adjustStock(
   reason: InventoryReason,
   adminId?: string
 ) {
-  const product = await tx.product.findUniqueOrThrow({ where: { id: productId } });
-  const newStock = product.stockQty + quantityChanged;
+  // One atomic update (no read-then-write), so two requests can't overwrite each other.
+  // If the result is below zero we throw, which rolls back the whole transaction.
+  const updated = await tx.product.update({
+    where: { id: productId },
+    data: { stockQty: { increment: quantityChanged } },
+  });
+  const newStock = updated.stockQty;
 
   if (newStock < 0) {
-    throw new Error(
-      `Stock adjustment would take "${product.name}" below zero.`
-    );
+    throw new Error(`Stock adjustment would take "${updated.name}" below zero.`);
   }
-
-  await tx.product.update({
-    where: { id: productId },
-    data: { stockQty: newStock },
-  });
 
   await tx.inventoryHistory.create({
     data: {
       productId,
-      previousStock: product.stockQty,
+      previousStock: newStock - quantityChanged,
       newStock,
       quantityChanged,
       reason,

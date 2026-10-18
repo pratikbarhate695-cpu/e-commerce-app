@@ -4,7 +4,8 @@ import { requireAdmin } from "@/lib/actions/require-admin";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { OrderStatusBadge } from "@/components/admin/badge";
 import { OrderStatusForm } from "@/components/admin/order-status-form";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatDate } from "@/lib/format";
+import { safeHttpUrl } from "@/lib/order-status";
 
 export default async function AdminOrderDetailPage({
   params,
@@ -96,6 +97,40 @@ export default async function AdminOrderDetailPage({
             </p>
           </div>
 
+          {(order.courierName || order.trackingNumber || order.trackingUrl || order.estimatedDelivery) && (
+            <div>
+              <h2 className="mb-3 text-sm text-ink/60">Shipment tracking</h2>
+              <div className="space-y-1 text-sm">
+                {order.courierName && (
+                  <p>
+                    <span className="text-ink/50">Courier:</span> {order.courierName}
+                  </p>
+                )}
+                {order.trackingNumber && (
+                  <p>
+                    <span className="text-ink/50">Tracking #:</span> {order.trackingNumber}
+                  </p>
+                )}
+                {order.estimatedDelivery && (
+                  <p>
+                    <span className="text-ink/50">Expected:</span>{" "}
+                    {formatDate(order.estimatedDelivery)}
+                  </p>
+                )}
+                {safeHttpUrl(order.trackingUrl) && (
+                  <a
+                    href={safeHttpUrl(order.trackingUrl)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block underline underline-offset-4"
+                  >
+                    Track package
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
           <div>
             <h2 className="mb-3 text-sm text-ink/60">History</h2>
             <div className="space-y-1">
@@ -111,7 +146,14 @@ export default async function AdminOrderDetailPage({
 
         <div>
           <h2 className="mb-4 text-sm text-ink/60">Update status</h2>
-          <OrderStatusForm orderId={order.id} currentStatus={order.status} />
+          <OrderStatusForm
+            orderId={order.id}
+            currentStatus={order.status}
+            courierName={order.courierName}
+            trackingNumber={order.trackingNumber}
+            trackingUrl={order.trackingUrl}
+            estimatedDelivery={order.estimatedDelivery}
+          />
         </div>
       </div>
     </div>

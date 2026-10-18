@@ -13,7 +13,7 @@ export type AddressInput = z.infer<typeof addressSchema>;
 
 export const checkoutSchema = z.object({
   address: addressSchema,
-  paymentMethod: z.literal("COD"),
+  paymentMethod: z.literal("RAZORPAY"),
   couponCode: z
     .string()
     .trim()

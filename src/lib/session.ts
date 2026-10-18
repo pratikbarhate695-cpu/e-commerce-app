@@ -28,6 +28,14 @@ function displayName(email: string, meta: unknown): string {
   if (typeof fromMeta === "string" && fromMeta.trim()) {
     return fromMeta.trim().slice(0, 120);
   }
+  // Google sends the name as full_name.
+  const fullName =
+    meta && typeof meta === "object" && "full_name" in meta
+      ? (meta as { full_name?: unknown }).full_name
+      : undefined;
+  if (typeof fullName === "string" && fullName.trim()) {
+    return fullName.trim().slice(0, 120);
+  }
   return email.split("@")[0] || "Customer";
 }
 
@@ -69,6 +77,12 @@ export const auth = cache(async (): Promise<Session> => {
   if (existing) {
     // Already tied to a different Supabase account: refuse rather than guess.
     if (existing.supabaseId && existing.supabaseId !== supabaseId) return null;
+    // An admin row that is not linked yet can only be claimed through the normal
+    // email login, never through a social login (Google).
+    const provider = sbUser.app_metadata?.provider;
+    if (existing.role === "ADMIN" && !existing.supabaseId && provider && provider !== "email") {
+      return null;
+    }
     const updated = await prisma.user.update({
       where: { id: existing.id },
       data: { supabaseId },

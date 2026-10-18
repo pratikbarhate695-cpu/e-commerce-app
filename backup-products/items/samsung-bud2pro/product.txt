@@ -1,0 +1,10 @@
+sku: SAM-BUDS2-PRO-WHITE
+name: Samsung Galaxy Buds2 Pro White
+slug: samsung-galaxy-buds2-pro-white
+brand: Samsung
+category: Audio
+mrp: 10680
+price: 9680
+stock: 3
+low_stock: 2
+description: Enjoy detailed wireless sound with Samsung Galaxy Buds2 Pro White. Features include active noise cancellation and 360 Audio. Check product availability, authenticity, condition and warranty with the supplier before purchasing.

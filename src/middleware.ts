@@ -49,8 +49,8 @@ export async function middleware(request: NextRequest) {
     return withSessionCookies(response, NextResponse.redirect(url));
   }
 
-  // Customer-only pages: must be signed in, and admins are kept out
-  // (admin and customer accounts stay separate).
+  // Cart, checkout and account pages require a verified signed-in account.
+  // Admins may open the storefront too, so they can test cart/checkout flows.
   if (isCustomerArea && !isLoggedIn) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -58,13 +58,6 @@ export async function middleware(request: NextRequest) {
     url.searchParams.set("from", pathname + search);
     return withSessionCookies(response, NextResponse.redirect(url));
   }
-  if (isCustomerArea && isAdmin) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin/dashboard";
-    url.search = "";
-    return withSessionCookies(response, NextResponse.redirect(url));
-  }
-
   return response;
 }
 

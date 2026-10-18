@@ -1,0 +1,13 @@
+sku: LEN-TAB-101-4-64-PB-001
+name: Lenovo Tab (Smartchoice) 10.1-inch Wi-Fi Tablet
+slug: lenovo-tab-smartchoice-10-1-inch-polar-blue
+brand: Lenovo
+category: Tablets
+mrp: 25000
+price: 23000
+stock: 3
+low_stock: 2
+discount: 8
+active: true
+featured: false
+description: Lenovo Tab Smartchoice with a 10.1-inch display, 4 GB RAM, 64 GB ROM, expandable storage up to 1 TB, metal body, Dolby Atmos speakers and Android 14.

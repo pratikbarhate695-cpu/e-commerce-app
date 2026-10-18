@@ -24,7 +24,7 @@ export function CategoryForm({ categories }: { categories: Category[] }) {
           </option>
         ))}
       </AdminSelect>
-      {!state.ok && <p className="text-sm text-red-700">{state.error}</p>}
+      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
       <AdminSubmitButton>Add category</AdminSubmitButton>
     </form>
   );

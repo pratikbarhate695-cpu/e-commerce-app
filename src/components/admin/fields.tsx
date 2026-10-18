@@ -10,7 +10,7 @@ export function AdminField({ label, id, ...props }: FieldProps) {
       <input
         id={fieldId}
         {...props}
-        className="mt-1 w-full border border-ink/15 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+        className="mt-1 w-full border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-accent"
       />
     </label>
   );
@@ -26,7 +26,7 @@ export function AdminTextarea({ label, id, ...props }: TextareaProps) {
       <textarea
         id={fieldId}
         {...props}
-        className="mt-1 w-full border border-ink/15 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+        className="mt-1 w-full border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-accent"
       />
     </label>
   );
@@ -45,7 +45,7 @@ export function AdminSelect({ label, id, children, ...props }: SelectProps) {
       <select
         id={fieldId}
         {...props}
-        className="mt-1 w-full border border-ink/15 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+        className="mt-1 w-full border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-accent"
       >
         {children}
       </select>

@@ -18,7 +18,7 @@ async function getOrCreateCartId(userId: string) {
 
 export type CartActionResult = { ok: true } | { ok: false; error: string };
 
-export async function addToCart(formData: FormData): Promise<CartActionResult> {
+async function saveCartItem(formData: FormData, mode: "add" | "set"): Promise<CartActionResult> {
   let user;
   try {
     user = await requireUser();
@@ -46,7 +46,8 @@ export async function addToCart(formData: FormData): Promise<CartActionResult> {
   const existing = await prisma.cartItem.findUnique({
     where: { cartId_productId: { cartId, productId: product.id } },
   });
-  const nextQuantity = (existing?.quantity ?? 0) + parsed.data.quantity;
+  const nextQuantity =
+    mode === "add" ? (existing?.quantity ?? 0) + parsed.data.quantity : parsed.data.quantity;
 
   if (nextQuantity > product.stockQty) {
     return {
@@ -63,6 +64,15 @@ export async function addToCart(formData: FormData): Promise<CartActionResult> {
 
   revalidatePath("/cart");
   return { ok: true };
+}
+
+export async function addToCart(formData: FormData): Promise<CartActionResult> {
+  return saveCartItem(formData, "add");
+}
+
+/** "Buy now": the cart gets exactly this quantity of the product, then the shopper goes to checkout. */
+export async function buyNow(formData: FormData): Promise<CartActionResult> {
+  return saveCartItem(formData, "set");
 }
 
 export async function updateCartItem(formData: FormData): Promise<CartActionResult> {
