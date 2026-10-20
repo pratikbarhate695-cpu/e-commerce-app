@@ -24,10 +24,23 @@ export async function POST(request: Request) {
 
   try {
     if (event.event === "payment.captured" || event.event === "order.paid") {
-      await markOrderPaid(payment.order_id, payment.id, payment.amount);
-    } else if (event.event === "payment.failed") {
-      await markPaymentFailed(payment.order_id);
-    }
+const result = await markOrderPaid(
+payment.order_id,
+payment.id,
+payment.amount
+);
+
+if (!result.ok) {
+console.error("Razorpay payment could not be processed:", payment.order_id);
+return NextResponse.json(
+{ error: "Payment processing failed" },
+{ status: 500 }
+);
+}
+} else if (event.event === "payment.failed") {
+await markPaymentFailed(payment.order_id);
+}
+
   } catch (err) {
     console.error("Razorpay webhook error", err);
     // 500 makes Razorpay retry later.
