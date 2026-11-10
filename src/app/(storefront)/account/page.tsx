@@ -9,24 +9,25 @@ export default async function AccountPage() {
   async function signOutAction() {
     "use server";
     // scope "local": sign out this device only, not every session.
-    await createClient().auth.signOut({ scope: "local" });
+    const supabase = await createClient();
+    await supabase.auth.signOut({ scope: "local" });
     redirect("/");
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="font-serif text-3xl">Your account</h1>
+    <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
+      <h1 className="text-3xl font-bold tracking-tight">Your account</h1>
       <p className="mt-3 text-ink/70">Signed in as {session?.user?.email}.</p>
       <Link
         href="/account/orders"
-        className="mt-6 inline-block text-sm underline underline-offset-4"
+        className="site-primary-button mt-6"
       >
         View your orders
       </Link>
       <form action={signOutAction} className="mt-10">
         <button
           type="submit"
-          className="text-sm text-ink/60 underline underline-offset-4"
+          className="site-secondary-button"
         >
           Sign out
         </button>

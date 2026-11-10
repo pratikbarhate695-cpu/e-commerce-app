@@ -60,3 +60,37 @@ export function uploadProductImage(file: File): Promise<UploadResult> {
 export function uploadReviewImage(file: File): Promise<UploadResult> {
   return uploadImage(file, "reviews");
 }
+
+export function uploadBannerImage(file: Blob): Promise<UploadResult> {
+  return uploadImage(file as File, "banners");
+}
+
+/**
+ * Deletes one image from Cloudinary (signed request, server-side only).
+ * "not found" counts as success: the goal is that the file is gone.
+ */
+export async function deleteImage(publicId: string): Promise<void> {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary environment variables are not configured.");
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const body = new FormData();
+  body.set("public_id", publicId);
+  body.set("api_key", apiKey);
+  body.set("timestamp", String(timestamp));
+  body.set("signature", sign({ public_id: publicId, timestamp }, apiSecret));
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
+    method: "POST",
+    body,
+  });
+  if (!res.ok) throw new Error(`Cloudinary delete failed (${res.status}).`);
+  const data = (await res.json()) as { result?: string };
+  if (data.result !== "ok" && data.result !== "not found") {
+    throw new Error(`Cloudinary delete failed (${data.result ?? "unknown"}).`);
+  }
+}

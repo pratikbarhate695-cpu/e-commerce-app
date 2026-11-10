@@ -18,7 +18,7 @@ export default async function CouponsPage() {
         <div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-ink/10 text-left text-ink/50">
+              <tr className="border-b border-ink/10 text-left text-ink/65">
                 <th className="py-2 font-normal">Code</th>
                 <th className="py-2 font-normal">Value</th>
                 <th className="py-2 font-normal">Used</th>
@@ -30,10 +30,10 @@ export default async function CouponsPage() {
               {coupons.map((c) => (
                 <tr key={c.id} className="border-b border-ink/5">
                   <td className="py-2">{c.code}</td>
-                  <td className="py-2 text-ink/60">
+                  <td className="py-2 text-ink/65">
                     {c.type === "PERCENT" ? `${c.value}%` : formatMoney(c.value)}
                   </td>
-                  <td className="py-2 text-ink/60">
+                  <td className="py-2 text-ink/65">
                     {c.timesUsed}
                     {c.usageLimit ? ` / ${c.usageLimit}` : ""}
                   </td>
@@ -50,11 +50,11 @@ export default async function CouponsPage() {
             </tbody>
           </table>
           {coupons.length === 0 && (
-            <p className="mt-4 text-sm text-ink/50">No coupons yet.</p>
+            <p className="mt-4 text-sm text-ink/65">No coupons yet.</p>
           )}
         </div>
         <div>
-          <h2 className="mb-4 text-sm text-ink/60">Create a coupon</h2>
+          <h2 className="mb-4 text-sm text-ink/65">Create a coupon</h2>
           <CouponForm />
         </div>
       </div>

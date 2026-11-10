@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/storefront/legal-page";
 import { SITE } from "@/lib/site";
+import { DISPATCH_WORKING_DAYS, TRANSIT_WORKING_DAYS } from "@/lib/delivery";
 
 export const metadata: Metadata = { title: `Shipping Policy | ${SITE.name}` };
 
 export default function ShippingPolicyPage() {
   return (
-    <LegalPage title="Shipping Policy">
+    <LegalPage title="Shipping Policy" updated={SITE.policyUpdated.shipping}>
       <h2>Where we ship</h2>
       <p>We ship across India to serviceable pin codes. We do not ship outside India at this time.</p>
 
       <h2>Order processing</h2>
       <p>
         We ship an order after your online payment is successfully received and
-        confirmed. We usually dispatch within 1 to 3 working days. Orders are
+        confirmed. We usually dispatch within {DISPATCH_WORKING_DAYS.min} to {DISPATCH_WORKING_DAYS.max} working days. Orders are
         not shipped on Sundays and public holidays.
       </p>
 
       <h2>Delivery time</h2>
       <p>
-        Delivery usually takes 3 to 7 working days after dispatch, depending on
+        Delivery usually takes {TRANSIT_WORKING_DAYS.min} to {TRANSIT_WORKING_DAYS.max} working days after dispatch, depending on
         your location. Delays can happen due to weather, strikes or courier
         issues. These are estimates, not guarantees.
       </p>
@@ -44,7 +45,7 @@ export default function ShippingPolicyPage() {
       <h2>Damaged parcels</h2>
       <p>
         Do not accept a parcel that is visibly tampered with or damaged. Record
-        an unboxing video when you open it, and contact us within {SITE.returnDays} days at {SITE.email} or {SITE.phone}.
+        an unboxing video when you open it, and contact us within {SITE.returnDays} days of receiving the parcel at {SITE.email} or {SITE.phone}.
       </p>
     </LegalPage>
   );

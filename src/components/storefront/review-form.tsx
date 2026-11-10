@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { submitReview, type FeedbackResult } from "@/lib/actions/reviews";
 import { ImagePicker } from "@/components/ui/image-picker";
@@ -50,7 +50,7 @@ function StarInput() {
 
 export function ReviewForm({ productId }: { productId: string }) {
   const router = useRouter();
-  const [state, formAction] = useFormState(submitReview.bind(null, productId), initial);
+const [state, formAction] = useActionState(submitReview.bind(null, productId), initial);
 
   useEffect(() => {
     if (state.ok && state.message) router.refresh();
@@ -92,7 +92,7 @@ export function ReviewForm({ productId }: { productId: string }) {
         name="images"
         max={4}
         label="Add photos (optional)"
-        hint="Up to 4 photos. Click Add again to pick more."
+        hint="Up to 4 JPG, PNG or WebP photos; 4 MB total. Click Add again to pick more."
       />
 
       {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}

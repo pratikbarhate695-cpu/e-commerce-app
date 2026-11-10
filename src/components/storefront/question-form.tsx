@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { submitQuestion, type FeedbackResult } from "@/lib/actions/reviews";
 
@@ -22,8 +23,7 @@ function Submit() {
 
 export function QuestionForm({ productId }: { productId: string }) {
   const router = useRouter();
-  const [state, formAction] = useFormState(submitQuestion.bind(null, productId), initial);
-
+const [state, formAction] = useActionState(submitQuestion.bind(null, productId), initial);
   useEffect(() => {
     if (state.ok && state.message) router.refresh();
   }, [state, router]);

@@ -39,11 +39,13 @@ export function ImagePicker({
   max = 8,
   label = "Add images",
   hint,
+  maxTotalBytes = 4 * 1024 * 1024,
 }: {
   name: string;
   max?: number;
   label?: string;
   hint?: string;
+  maxTotalBytes?: number;
 }) {
   const realInput = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -67,17 +69,26 @@ export function ImagePicker({
     setError(null);
     setBusy(true);
 
-    const images = picked.filter((f) => f.type.startsWith("image/"));
-    if (images.length < picked.length) setError("Only image files can be added.");
+    const images = picked.filter((f) =>
+      ["image/jpeg", "image/png", "image/webp"].includes(f.type)
+    );
+    if (images.length < picked.length) setError("Only JPG, PNG or WebP images can be added.");
 
     const room = max - files.length;
     if (images.length > room) setError(`You can add up to ${max} images.`);
 
     const next = [...files];
+    let totalBytes = next.reduce((total, file) => total + file.size, 0);
     for (const file of images.slice(0, Math.max(room, 0))) {
       const duplicate = next.some((f) => f.name === file.name && f.size === file.size);
       if (duplicate) continue;
-      next.push(await shrink(file));
+      const ready = await shrink(file);
+      if (totalBytes + ready.size > maxTotalBytes) {
+        setError(`Selected images must total ${Math.round(maxTotalBytes / (1024 * 1024))} MB or less.`);
+        continue;
+      }
+      next.push(ready);
+      totalBytes += ready.size;
     }
     commit(next);
     setBusy(false);
@@ -85,7 +96,7 @@ export function ImagePicker({
 
   return (
     <div>
-      <span className="text-sm text-ink/60">{label}</span>
+      <span className="text-sm text-ink/65">{label}</span>
 
       {/* The real input that is submitted with the form. */}
       <input ref={realInput} type="file" name={name} multiple className="hidden" tabIndex={-1} />
@@ -108,15 +119,15 @@ export function ImagePicker({
         ))}
 
         {files.length < max && (
-          <label className="flex h-24 w-20 cursor-pointer flex-col items-center justify-center gap-1 border border-dashed border-ink/30 text-xs text-ink/60 hover:border-accent hover:text-ink">
+          <label className="flex h-24 w-20 cursor-pointer flex-col items-center justify-center gap-1 border border-dashed border-ink/30 text-xs text-ink/65 hover:border-accent hover:text-ink">
             <span className="text-xl leading-none">+</span>
             {busy ? "Wait…" : "Add"}
-            <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
+            <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={onPick} className="hidden" />
           </label>
         )}
       </div>
 
-      <p className="mt-2 text-xs text-ink/50">
+      <p className="mt-2 text-xs text-ink/65">
         {files.length} of {max} added. {hint ?? "You can add images in several steps."}
       </p>
       {error && <p className="mt-1 text-xs text-red-700 dark:text-red-300">{error}</p>}

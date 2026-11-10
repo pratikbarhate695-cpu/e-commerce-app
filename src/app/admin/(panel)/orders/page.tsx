@@ -74,7 +74,7 @@ export default async function AdminOrdersPage({
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
           <Link
             href={`/admin/orders${q ? `?q=${encodeURIComponent(q)}` : ""}`}
-            className={`px-2 py-1 ${!activeStatus ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/60"}`}
+            className={`px-2 py-1 ${!activeStatus ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/65"}`}
           >
             All
           </Link>
@@ -82,7 +82,7 @@ export default async function AdminOrdersPage({
             <Link
               key={s}
               href={`/admin/orders?status=${s}${qSuffix}`}
-              className={`px-2 py-1 ${activeStatus === s ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/60"}`}
+              className={`px-2 py-1 ${activeStatus === s ? "bg-ink text-paper" : "bg-ink/[0.06] text-ink/65"}`}
             >
               {s}
             </Link>
@@ -91,7 +91,7 @@ export default async function AdminOrdersPage({
 
         <table className="mt-6 w-full text-sm">
           <thead>
-            <tr className="border-b border-ink/10 text-left text-ink/50">
+            <tr className="border-b border-ink/10 text-left text-ink/65">
               <th className="py-2 font-normal">Order</th>
               <th className="py-2 font-normal">Customer</th>
               <th className="py-2 font-normal">Total</th>
@@ -109,20 +109,20 @@ export default async function AdminOrdersPage({
                 </td>
                 <td className="py-3 text-ink/70">
                   {order.user.name}
-                  <span className="block text-xs text-ink/40">{order.user.email}</span>
+                  <span className="block text-xs text-ink/65">{order.user.email}</span>
                 </td>
                 <td className="py-3 text-ink/70">{formatMoney(order.grandTotal)}</td>
                 <td className="py-3">
                   <OrderStatusBadge status={order.status} />
                 </td>
-                <td className="py-3 text-ink/50">{order.createdAt.toLocaleDateString()}</td>
+                <td className="py-3 text-ink/65">{order.createdAt.toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {orders.length === 0 && (
-          <p className="mt-8 text-sm text-ink/50">No orders found.</p>
+          <p className="mt-8 text-sm text-ink/65">No orders found.</p>
         )}
       </div>
     </div>

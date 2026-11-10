@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { AdminField, AdminCheckbox } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
 import { createBanner } from "@/lib/actions/admin/banners";
@@ -9,12 +9,12 @@ import type { AdminActionResult } from "@/lib/actions/admin/products";
 const initialState: AdminActionResult = { ok: true };
 
 export function BannerForm() {
-  const [state, formAction] = useFormState(createBanner, initialState);
+  const [state, formAction] = useActionState(createBanner, initialState);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
       <label className="block">
-        <span className="text-sm text-ink/60">Image</span>
+        <span className="text-sm text-ink/65">Image</span>
         <input
           type="file"
           name="image"

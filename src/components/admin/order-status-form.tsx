@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { OrderStatus } from "@prisma/client";
 import { AdminSelect, AdminField } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
@@ -18,7 +18,6 @@ const ALL_STATUSES: OrderStatus[] = [
   "DELIVERED",
   "CANCELLED",
   "RETURNED",
-  "REFUNDED",
 ];
 
 // yyyy-mm-dd for an <input type="date">. The server stores this as UTC
@@ -44,7 +43,7 @@ export function OrderStatusForm({
   trackingUrl: string | null;
   estimatedDelivery: Date | null;
 }) {
-  const [state, formAction] = useFormState(updateOrderStatus, initialState);
+  const [state, formAction] = useActionState(updateOrderStatus, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -59,8 +58,8 @@ export function OrderStatusForm({
       <AdminField label="Note (optional)" name="note" />
 
       <div className="border-t border-ink/10 pt-4">
-        <p className="text-sm text-ink/60">Shipment tracking (optional)</p>
-        <p className="mt-1 text-xs text-ink/40">
+        <p className="text-sm text-ink/65">Shipment tracking (optional)</p>
+        <p className="mt-1 text-xs text-ink/65">
           Can be saved on its own, without changing the status above.
         </p>
         <div className="mt-3 space-y-3">

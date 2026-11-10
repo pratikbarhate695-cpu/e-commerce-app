@@ -1,5 +1,8 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ["10.209.155.155"],
+
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
@@ -20,8 +23,6 @@ const nextConfig = {
     ];
   },
   experimental: {
-    // Product / review photos are sent through server actions.
-    // Images are shrunk in the browser first, so 5 MB is plenty.
     serverActions: { bodySizeLimit: "5mb" },
   },
 };

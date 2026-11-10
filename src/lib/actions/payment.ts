@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -34,6 +35,7 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
     if (err instanceof UnauthorizedError) return { ok: false, error: "Please sign in." };
     throw err;
   }
+
   if (!razorpayConfigured() || !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
     return { ok: false, error: "Online payment is not set up yet." };
   }
@@ -43,18 +45,24 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
   const order = await prisma.order.findFirst({
     where: { id: orderId, userId: user.id },
   });
+
   if (!order) return { ok: false, error: "Order not found." };
-  if (order.paymentStatus === "PAID") return { ok: false, error: "This order is already paid." };
+  if (order.paymentStatus === "PAID") {
+    return { ok: false, error: "This order is already paid." };
+  }
   if (order.status !== "PENDING") {
     return { ok: false, error: "This order expired. Please place a new order." };
   }
 
   try {
     const amount = toPaise(order.grandTotal);
-    if (amount < MIN_ONLINE_PAYMENT_PAISE) return { ok: false, error: MIN_AMOUNT_MESSAGE };
+
+    if (amount < MIN_ONLINE_PAYMENT_PAISE) {
+      return { ok: false, error: MIN_AMOUNT_MESSAGE };
+    }
+
     const rzpOrder = await createRazorpayOrder(amount, order.orderNumber);
 
-    // One row per attempt, so a late payment on an earlier attempt still matches.
     await prisma.payment.create({
       data: {
         orderId: order.id,
@@ -65,7 +73,11 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
       },
     });
 
-    const address = order.shippingAddress as { fullName?: string; phone?: string } | null;
+    const address = order.shippingAddress as {
+      fullName?: string;
+      phone?: string;
+    } | null;
+
     return {
       ok: true,
       keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
@@ -76,7 +88,10 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
       phone: address?.phone ?? "",
     };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Could not start payment." };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Could not start payment.",
+    };
   }
 }
 
@@ -87,6 +102,7 @@ export async function confirmPayment(
   signature: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   let user;
+
   try {
     user = await requireUser();
   } catch {
@@ -95,36 +111,74 @@ export async function confirmPayment(
 
   const order = await prisma.order.findFirst({
     where: { id: orderId, userId: user.id },
-    include: { payments: { where: { provider: "razorpay" } } },
+    include: {
+      payments: {
+        where: { provider: "razorpay" },
+      },
+    },
   });
-  if (!order) return { ok: false, error: "Order not found." };
-  if (order.paymentStatus === "PAID") return { ok: true };
 
-  const known = order.payments.some((p) => p.providerRef === razorpayOrderId);
-  if (!known || !verifyCheckoutSignature(razorpayOrderId, razorpayPaymentId, signature)) {
+  if (!order) return { ok: false, error: "Order not found." };
+
+  const knownPayment = order.payments.find(
+    (payment) => payment.providerRef === razorpayOrderId
+  );
+
+  if (
+    !knownPayment ||
+    !verifyCheckoutSignature(razorpayOrderId, razorpayPaymentId, signature)
+  ) {
     return { ok: false, error: "Payment could not be verified." };
   }
 
   try {
-    // Ask Razorpay directly, so we never rely only on what the browser says.
+    const expectedAmount = toPaise(order.grandTotal);
+    const recordedAmount = toPaise(knownPayment.amount);
+
+    // The stored payment attempt and the order must agree on the amount.
+    if (recordedAmount !== expectedAmount) {
+      return { ok: false, error: "Payment amount does not match the order." };
+    }
+
+    // Verify directly with Razorpay rather than trusting browser data.
     const payment = await fetchRazorpayPayment(razorpayPaymentId);
-    if (payment.order_id !== razorpayOrderId) {
+
+    if (
+      payment.id !== razorpayPaymentId ||
+      payment.order_id !== razorpayOrderId ||
+      payment.currency !== "INR" ||
+      payment.amount !== expectedAmount
+    ) {
       return { ok: false, error: "Payment could not be verified." };
     }
+
     if (payment.status !== "captured") {
       return {
         ok: false,
-        error: "Your payment is still being confirmed. If money was deducted, this page will update shortly.",
+        error:
+          "Your payment is still being confirmed. If money was deducted, this page will update shortly.",
       };
     }
-    const result = await markOrderPaid(razorpayOrderId, razorpayPaymentId, payment.amount);
-    if (!result.ok) return { ok: false, error: "Payment could not be verified." };
+
+    const result = await markOrderPaid(
+      razorpayOrderId,
+      razorpayPaymentId,
+      payment.amount
+    );
+
+    if (!result.ok) {
+      return { ok: false, error: "Payment could not be verified." };
+    }
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Could not confirm payment." };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Could not confirm payment.",
+    };
   }
 
   revalidatePath("/account/orders");
   revalidatePath(`/account/orders/${orderId}`);
   revalidatePath("/admin/orders");
+
   return { ok: true };
 }

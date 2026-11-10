@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: `Terms and Conditions | ${SITE.name}`
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms and Conditions">
+    <LegalPage title="Terms and Conditions" updated={SITE.policyUpdated.terms}>
       <p>
         By using this website and placing an order, you agree to these terms.
         The website is operated by {SITE.name}, {SITE.address}. Please read them
@@ -43,9 +43,9 @@ export default function TermsPage() {
 
       <h2>Warranty</h2>
       <p>
-        Branded products carry the manufacturer&apos;s warranty, which is
-        handled by the brand&apos;s authorised service centre. Please confirm the
-        exact model and warranty details on the invoice.
+        Products come with a warranty of {SITE.warrantyDays} days only. This is
+        separate from the {SITE.returnDays}-day return window in our Refund and
+        Return Policy. Please confirm the exact model and details on the invoice.
       </p>
 
       <h2>Intellectual property</h2>

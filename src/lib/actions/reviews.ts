@@ -5,11 +5,13 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser, UnauthorizedError } from "@/lib/actions/require-admin";
 import { uploadReviewImage } from "@/lib/cloudinary";
+import { checkImageFile } from "@/lib/banners/rules";
 
 export type FeedbackResult = { ok: true; message?: string } | { ok: false; error: string };
 
 const MAX_REVIEW_IMAGES = 4;
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+// The Server Actions request limit is 5 MB; leave room for form data and headers.
+const MAX_REVIEW_TOTAL_BYTES = 4 * 1024 * 1024;
 // A review counts as "verified purchase" if the customer has an order with this product
 // that is confirmed or further along (not pending or cancelled).
 const BOUGHT_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED"] as const;
@@ -59,9 +61,12 @@ export async function submitReview(
   if (files.length > MAX_REVIEW_IMAGES) {
     return { ok: false, error: `You can add up to ${MAX_REVIEW_IMAGES} photos.` };
   }
-  for (const f of files) {
-    if (!f.type.startsWith("image/")) return { ok: false, error: "Only image files are allowed." };
-    if (f.size > MAX_IMAGE_BYTES) return { ok: false, error: "Each photo must be under 5 MB." };
+  if (files.reduce((total, file) => total + file.size, 0) > MAX_REVIEW_TOTAL_BYTES) {
+    return { ok: false, error: "Review photos must total 4 MB or less. Please choose smaller photos." };
+  }
+  for (const file of files) {
+    const check = await checkImageFile(file);
+    if (!check.ok) return { ok: false, error: check.error };
   }
 
   let uploaded: { secureUrl: string }[] = [];

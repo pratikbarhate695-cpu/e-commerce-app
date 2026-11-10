@@ -1,7 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
-import type { StoreSettings } from "@prisma/client";
+import { useActionState } from "react";
 import { AdminField } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
 import { updateSettings } from "@/lib/actions/admin/settings";
@@ -9,11 +8,24 @@ import type { AdminActionResult } from "@/lib/actions/admin/products";
 
 const initialState: AdminActionResult | null = null;
 
-export function SettingsForm({ settings }: { settings: StoreSettings }) {
-  const [state, formAction] = useFormState(
-    (_: AdminActionResult | null, formData: FormData) => updateSettings(_ ?? { ok: true }, formData),
-    initialState
-  );
+type SettingsFormProps = {
+  storeName: string;
+  email: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  address: string | null;
+  currency: string;
+  taxPercent: string;
+  shippingFee: string;
+  freeShippingThreshold: string;
+};
+
+export function SettingsForm({ settings }: { settings: SettingsFormProps }) {
+  const [state, formAction] = useActionState(
+  (_: AdminActionResult | null, formData: FormData) =>
+    updateSettings(_ ?? { ok: true }, formData),
+  initialState
+);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">

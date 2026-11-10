@@ -6,7 +6,7 @@ export function AdminField({ label, id, ...props }: FieldProps) {
   const fieldId = id ?? props.name;
   return (
     <label htmlFor={fieldId} className="block">
-      <span className="text-sm text-ink/60">{label}</span>
+      <span className="text-sm text-ink/65">{label}</span>
       <input
         id={fieldId}
         {...props}
@@ -22,7 +22,7 @@ export function AdminTextarea({ label, id, ...props }: TextareaProps) {
   const fieldId = id ?? props.name;
   return (
     <label htmlFor={fieldId} className="block">
-      <span className="text-sm text-ink/60">{label}</span>
+      <span className="text-sm text-ink/65">{label}</span>
       <textarea
         id={fieldId}
         {...props}
@@ -41,7 +41,7 @@ export function AdminSelect({ label, id, children, ...props }: SelectProps) {
   const fieldId = id ?? props.name;
   return (
     <label htmlFor={fieldId} className="block">
-      <span className="text-sm text-ink/60">{label}</span>
+      <span className="text-sm text-ink/65">{label}</span>
       <select
         id={fieldId}
         {...props}

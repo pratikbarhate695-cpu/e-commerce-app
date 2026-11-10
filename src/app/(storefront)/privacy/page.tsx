@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: `Privacy Policy | ${SITE.name}` };
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy">
+    <LegalPage title="Privacy Policy" updated={SITE.policyUpdated.privacy}>
       <p>
         {SITE.name} respects your privacy. This policy explains what personal
         data we collect, why we collect it, and your choices.

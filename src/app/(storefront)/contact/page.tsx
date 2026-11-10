@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: `Contact Us | ${SITE.name}` };
 
 export default function ContactPage() {
   return (
-    <LegalPage title="Contact Us">
+    <LegalPage title="Contact Us" updated={SITE.policyUpdated.contact}>
       <p>
         Have a question about an order, a product or a return? Get in touch and
         we will reply as soon as we can.

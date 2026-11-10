@@ -33,14 +33,14 @@ export default async function AdminDashboardPage() {
     <div>
       <AdminHeader title="Dashboard" />
       <div className="px-8 py-6">
-        <p className="text-sm text-ink/60">
+        <p className="text-sm text-ink/65">
           Signed in as {admin.email} ({admin.role}).
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label} className="border border-ink/10 p-4">
-              <p className="text-xs text-ink/50">{s.label}</p>
+              <p className="text-xs text-ink/65">{s.label}</p>
               <p className="mt-1 text-xl">{s.value}</p>
             </div>
           ))}
@@ -48,7 +48,7 @@ export default async function AdminDashboardPage() {
 
         {lowStockProducts.length > 0 && (
           <div className="mt-10">
-            <h2 className="text-sm text-ink/60">Needs restocking</h2>
+            <h2 className="text-sm text-ink/65">Needs restocking</h2>
             <ul className="mt-3 space-y-1">
               {lowStockProducts.map((p) => (
                 <li key={p.id} className="text-sm">

@@ -19,7 +19,7 @@ export default async function CustomersPage() {
       <div className="px-8 py-6">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-ink/10 text-left text-ink/50">
+            <tr className="border-b border-ink/10 text-left text-ink/65">
               <th className="py-2 font-normal">Name</th>
               <th className="py-2 font-normal">Email</th>
               <th className="py-2 font-normal">Orders</th>
@@ -37,14 +37,14 @@ export default async function CustomersPage() {
                   <td className="py-3 text-ink/70">{c.email}</td>
                   <td className="py-3 text-ink/70">{c.orders.length}</td>
                   <td className="py-3 text-ink/70">{formatMoney(spend)}</td>
-                  <td className="py-3 text-ink/50">{c.createdAt.toLocaleDateString()}</td>
+                  <td className="py-3 text-ink/65">{c.createdAt.toLocaleDateString()}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
         {customers.length === 0 && (
-          <p className="mt-8 text-sm text-ink/50">No customers yet.</p>
+          <p className="mt-8 text-sm text-ink/65">No customers yet.</p>
         )}
       </div>
     </div>

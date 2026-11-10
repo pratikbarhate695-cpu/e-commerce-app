@@ -11,7 +11,9 @@ const config: Config = {
       colors: {
         ink: "rgb(var(--color-ink) / <alpha-value>)",
         paper: "rgb(var(--color-paper) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
         accent: "rgb(var(--color-accent) / <alpha-value>)",
+        "on-accent": "rgb(var(--color-on-accent) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

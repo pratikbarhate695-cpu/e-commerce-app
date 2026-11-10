@@ -8,11 +8,11 @@ export function Field({ label, id, ...props }: Props) {
   const fieldId = id ?? props.name;
   return (
     <label htmlFor={fieldId} className="block">
-      <span className="text-sm text-ink/70">{label}</span>
+      <span className="text-sm font-medium text-ink/75">{label}</span>
       <input
         id={fieldId}
         {...props}
-        className="mt-1 w-full border-0 border-b border-ink/25 bg-transparent py-2 text-base text-ink outline-none transition-colors focus:border-accent"
+        className="mt-1.5 w-full rounded-xl border border-ink/50 bg-surface px-3.5 py-2.5 text-base text-ink transition-colors placeholder:text-ink/65 focus:border-accent"
       />
     </label>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { AdminField, AdminSelect, AdminCheckbox } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
 import { createCoupon } from "@/lib/actions/admin/coupons";
@@ -9,7 +9,7 @@ import type { AdminActionResult } from "@/lib/actions/admin/products";
 const initialState: AdminActionResult = { ok: true };
 
 export function CouponForm() {
-  const [state, formAction] = useFormState(createCoupon, initialState);
+const [state, formAction] = useActionState(createCoupon, initialState);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">

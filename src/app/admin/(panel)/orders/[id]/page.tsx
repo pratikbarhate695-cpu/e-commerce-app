@@ -43,34 +43,34 @@ export default async function AdminOrderDetailPage({
       <div className="grid grid-cols-1 gap-10 px-8 py-6 sm:grid-cols-3">
         <div className="sm:col-span-2 space-y-8">
           <div>
-            <h2 className="mb-3 text-sm text-ink/60">Items</h2>
+            <h2 className="mb-3 text-sm text-ink/65">Items</h2>
             <div className="space-y-2">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span>
                     {item.productNameSnapshot} × {item.quantity}
-                    <span className="ml-2 text-ink/40">{item.skuSnapshot}</span>
+                    <span className="ml-2 text-ink/65">{item.skuSnapshot}</span>
                   </span>
                   <span>{formatMoney(item.lineTotal)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 space-y-1 border-t border-ink/10 pt-4 text-sm">
-              <div className="flex justify-between text-ink/60">
+              <div className="flex justify-between text-ink/65">
                 <span>Subtotal</span>
                 <span>{formatMoney(order.subtotal)}</span>
               </div>
               {Number(order.discountTotal) > 0 && (
-                <div className="flex justify-between text-ink/60">
+                <div className="flex justify-between text-ink/65">
                   <span>Discount {order.couponCode ? `(${order.couponCode})` : ""}</span>
                   <span>-{formatMoney(order.discountTotal)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-ink/60">
+              <div className="flex justify-between text-ink/65">
                 <span>Shipping</span>
                 <span>{formatMoney(order.shippingFee)}</span>
               </div>
-              <div className="flex justify-between text-ink/60">
+              <div className="flex justify-between text-ink/65">
                 <span>Tax</span>
                 <span>{formatMoney(order.taxTotal)}</span>
               </div>
@@ -82,7 +82,7 @@ export default async function AdminOrderDetailPage({
           </div>
 
           <div>
-            <h2 className="mb-3 text-sm text-ink/60">Customer &amp; shipping</h2>
+            <h2 className="mb-3 text-sm text-ink/65">Customer &amp; shipping</h2>
             <p className="text-sm">{order.user.email}</p>
             <p className="mt-2 text-sm text-ink/70">
               {address.fullName} · {address.phone}
@@ -92,28 +92,28 @@ export default async function AdminOrderDetailPage({
               <br />
               {address.city}, {address.state} {address.pincode}
             </p>
-            <p className="mt-2 text-sm text-ink/50">
+            <p className="mt-2 text-sm text-ink/65">
               Payment: {order.paymentMethod} — {order.paymentStatus}
             </p>
           </div>
 
           {(order.courierName || order.trackingNumber || order.trackingUrl || order.estimatedDelivery) && (
             <div>
-              <h2 className="mb-3 text-sm text-ink/60">Shipment tracking</h2>
+              <h2 className="mb-3 text-sm text-ink/65">Shipment tracking</h2>
               <div className="space-y-1 text-sm">
                 {order.courierName && (
                   <p>
-                    <span className="text-ink/50">Courier:</span> {order.courierName}
+                    <span className="text-ink/65">Courier:</span> {order.courierName}
                   </p>
                 )}
                 {order.trackingNumber && (
                   <p>
-                    <span className="text-ink/50">Tracking #:</span> {order.trackingNumber}
+                    <span className="text-ink/65">Tracking #:</span> {order.trackingNumber}
                   </p>
                 )}
                 {order.estimatedDelivery && (
                   <p>
-                    <span className="text-ink/50">Expected:</span>{" "}
+                    <span className="text-ink/65">Expected:</span>{" "}
                     {formatDate(order.estimatedDelivery)}
                   </p>
                 )}
@@ -132,10 +132,10 @@ export default async function AdminOrderDetailPage({
           )}
 
           <div>
-            <h2 className="mb-3 text-sm text-ink/60">History</h2>
+            <h2 className="mb-3 text-sm text-ink/65">History</h2>
             <div className="space-y-1">
               {order.statusHistory.map((h) => (
-                <p key={h.id} className="text-xs text-ink/60">
+                <p key={h.id} className="text-xs text-ink/65">
                   {h.fromStatus} → {h.toStatus} · {h.createdAt.toLocaleString()}
                   {h.note ? ` — ${h.note}` : ""}
                 </p>
@@ -145,7 +145,7 @@ export default async function AdminOrderDetailPage({
         </div>
 
         <div>
-          <h2 className="mb-4 text-sm text-ink/60">Update status</h2>
+          <h2 className="mb-4 text-sm text-ink/65">Update status</h2>
           <OrderStatusForm
             orderId={order.id}
             currentStatus={order.status}

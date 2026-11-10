@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { Category } from "@prisma/client";
 import { AdminField, AdminSelect } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
@@ -10,7 +10,7 @@ import type { AdminActionResult } from "@/lib/actions/admin/products";
 const initialState: AdminActionResult = { ok: true };
 
 export function CategoryForm({ categories }: { categories: Category[] }) {
-  const [state, formAction] = useFormState(createCategory, initialState);
+  const [state, formAction] = useActionState(createCategory, initialState);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
