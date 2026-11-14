@@ -16,7 +16,7 @@ export const metadata = {
   title: "Zero Integration",
   description: "Shop authentic products at Zero Integration",
   verification: {
-    google: "TC8P5jQLG98QJ6wKiYOpnabfzSgB6wruWr4v6YeDrus",
+    google: "kjNmfEmB6l7ZeoDOkhN19EX9YB0BlT80fdbWt5McBG8",
   },
 };
 
