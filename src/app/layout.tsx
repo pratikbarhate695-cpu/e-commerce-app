@@ -15,6 +15,9 @@ const sans = Inter({
 export const metadata = {
   title: "Zero Integration",
   description: "Shop authentic products at Zero Integration",
+  verification: {
+    google: "kjNmfEmB6l7ZeoDOkhN19EX9YB0BlT80fdbWt5McBG8",
+  },
 };
 
 const themeScript = `(function(){try{var s=localStorage.getItem("zero-integration-theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
