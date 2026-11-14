@@ -38,16 +38,16 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <main className="mx-auto grid max-w-4xl grid-cols-1 gap-12 px-6 py-16 sm:grid-cols-2">
-      <div>
-        <h1 className="font-serif text-3xl">Checkout</h1>
+    <main className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+      <div className="rounded-3xl border border-ink/10 bg-surface p-5 sm:p-8">
+        <h1 className="text-3xl font-bold tracking-tight">Checkout</h1>
         <div className="mt-8">
           <CheckoutForm />
         </div>
       </div>
 
-      <div className="border-t border-ink/10 pt-6 sm:border-l sm:border-t-0 sm:pl-10 sm:pt-0">
-        <h2 className="text-sm text-ink/60">Order summary</h2>
+      <div className="h-fit rounded-3xl border border-ink/10 bg-surface p-5 sm:p-8 lg:sticky lg:top-40">
+        <h2 className="text-lg font-semibold">Order summary</h2>
         <div className="mt-4 space-y-2">
           {totals.lines.map((line) => (
             <div key={line.productId} className="flex justify-between text-sm">
@@ -59,15 +59,15 @@ export default async function CheckoutPage() {
           ))}
         </div>
         <div className="mt-4 space-y-1 border-t border-ink/10 pt-4 text-sm">
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Subtotal</span>
             <span>{formatMoney(totals.subtotal)}</span>
           </div>
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Shipping</span>
             <span>{formatMoney(totals.shippingFee)}</span>
           </div>
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Tax</span>
             <span>{formatMoney(totals.taxTotal)}</span>
           </div>
@@ -76,7 +76,7 @@ export default async function CheckoutPage() {
           <span>Total</span>
           <span>{formatMoney(totals.grandTotal)}</span>
         </div>
-        <p className="mt-3 text-xs text-ink/40">
+        <p className="mt-3 text-xs text-ink/65">
           A coupon applied at checkout will be recalculated on the server —
           this preview doesn&apos;t include one yet.
         </p>

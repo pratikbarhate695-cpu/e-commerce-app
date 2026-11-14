@@ -7,7 +7,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={`w-full bg-ink py-3 text-sm font-medium text-paper transition-opacity hover:opacity-90 disabled:opacity-50 ${className}`}
+      className={`w-full rounded-xl bg-accent py-3 text-sm font-semibold text-on-accent shadow-sm transition hover:shadow-lg hover:shadow-accent/30 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     />
   );
 }

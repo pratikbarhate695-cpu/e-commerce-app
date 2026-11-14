@@ -50,7 +50,7 @@ export function AddToCartForm({
   }
 
   if (maxQuantity < 1) {
-    return <p className="text-sm text-ink/50">Out of stock.</p>;
+    return <p className="text-sm text-ink/65">Out of stock.</p>;
   }
 
   return (

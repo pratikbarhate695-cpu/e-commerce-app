@@ -48,21 +48,21 @@ export default async function OrdersPage() {
   });
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12 sm:py-16">
-      <h1 className="font-serif text-3xl">My orders</h1>
+    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
+      <h1 className="text-3xl font-bold tracking-tight">My orders</h1>
 
       {orders.length === 0 ? (
         <div className="mt-10">
-          <p className="text-sm text-ink/60">You haven&apos;t placed any orders yet.</p>
+          <p className="text-sm text-ink/65">You haven&apos;t placed any orders yet.</p>
           <Link
             href="/shop"
-            className="mt-3 inline-block text-sm underline underline-offset-4"
+            className="site-primary-button mt-4"
           >
             Browse the shop
           </Link>
         </div>
       ) : (
-        <div className="mt-8 divide-y divide-ink/10 border-y border-ink/10">
+        <div className="mt-8 space-y-4">
           {orders.map((order) => {
             const image = order.items[0]?.product.images[0];
             const shownItems = order.items.slice(0, MAX_LISTED_ITEMS);
@@ -77,9 +77,9 @@ export default async function OrdersPage() {
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="flex gap-4 py-5 transition-colors hover:bg-ink/[0.03] focus-visible:bg-ink/[0.03]"
+                className="flex gap-4 rounded-2xl border border-ink/10 bg-surface p-4 transition hover:border-accent/40 hover:shadow-lg focus-visible:border-accent sm:p-5"
               >
-                <div className="h-20 w-16 shrink-0 overflow-hidden bg-ink/[0.04]">
+                <div className="h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-white">
                   {image && (
                     <Image
                       src={image.url}
@@ -105,12 +105,12 @@ export default async function OrdersPage() {
                     ))}
                   </ul>
                   {hiddenCount > 0 && (
-                    <p className="mt-0.5 text-xs text-ink/50">
+                    <p className="mt-0.5 text-xs text-ink/65">
                       +{hiddenCount} more {hiddenCount === 1 ? "item" : "items"}
                     </p>
                   )}
 
-                  <p className="mt-2 text-xs text-ink/50">
+                  <p className="mt-2 text-xs text-ink/65">
                     Placed {formatDate(order.createdAt)}
                   </p>
                   {delivery && <p className="mt-0.5 text-xs text-ink/80">{delivery}</p>}

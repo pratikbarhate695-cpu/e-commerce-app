@@ -1,3 +1,4 @@
+
 import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
@@ -18,24 +19,33 @@ export type SessionUser = {
 
 export type Session = { user: SessionUser } | null;
 
-const userSelect = { id: true, email: true, name: true, role: true } as const;
+const userSelect = {
+  id: true,
+  email: true,
+  name: true,
+  role: true,
+} as const;
 
 function displayName(email: string, meta: unknown): string {
   const fromMeta =
     meta && typeof meta === "object" && "name" in meta
       ? (meta as { name?: unknown }).name
       : undefined;
+
   if (typeof fromMeta === "string" && fromMeta.trim()) {
     return fromMeta.trim().slice(0, 120);
   }
+
   // Google sends the name as full_name.
   const fullName =
     meta && typeof meta === "object" && "full_name" in meta
       ? (meta as { full_name?: unknown }).full_name
       : undefined;
+
   if (typeof fullName === "string" && fullName.trim()) {
     return fullName.trim().slice(0, 120);
   }
+
   return email.split("@")[0] || "Customer";
 }
 
@@ -44,12 +54,15 @@ function displayName(email: string, meta: unknown): string {
  * Cached per request, so layout + page + action share one lookup.
  */
 export const auth = cache(async (): Promise<Session> => {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // getClaims() verifies the JWT signature; getSession() must not be trusted.
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
-  if (!claims?.sub || !claims.email) return null;
+
+  if (!claims?.sub || !claims.email) {
+    return null;
+  }
 
   const supabaseId = claims.sub;
   const email = claims.email.toLowerCase();
@@ -59,11 +72,12 @@ export const auth = cache(async (): Promise<Session> => {
     where: { supabaseId },
     select: userSelect,
   });
-  if (linked) return { user: linked };
+  if (linked) {
+    return { user: linked };
+  }
 
-  // First login with this Supabase account. Link or create the Prisma user,
-  // but only for a confirmed email, so nobody can claim an address they
-  // don't own. (Rare path, so one extra call to Supabase is fine.)
+  // First login with this Supabase account.
+  // Link or create the Prisma user only for a confirmed email.
   const { data: fresh } = await supabase.auth.getUser();
   const sbUser = fresh.user;
   if (!sbUser || sbUser.id !== supabaseId || !sbUser.email_confirmed_at) {
@@ -75,19 +89,31 @@ export const auth = cache(async (): Promise<Session> => {
     where: { email: { equals: email, mode: "insensitive" } },
   });
   if (existing) {
-    // Already tied to a different Supabase account: refuse rather than guess.
-    if (existing.supabaseId && existing.supabaseId !== supabaseId) return null;
-    // An admin row that is not linked yet can only be claimed through the normal
-    // email login, never through a social login (Google).
-    const provider = sbUser.app_metadata?.provider;
-    if (existing.role === "ADMIN" && !existing.supabaseId && provider && provider !== "email") {
+    // Already tied to a different Supabase account:
+    // refuse rather than guess.
+    if (existing.supabaseId && existing.supabaseId !== supabaseId) {
       return null;
     }
+
+    // An unlinked admin can only be claimed through normal email login,
+    // never through a social login such as Google.
+    const provider = sbUser.app_metadata?.provider;
+
+    if (
+      existing.role === "ADMIN" &&
+      !existing.supabaseId &&
+      provider &&
+      provider !== "email"
+    ) {
+      return null;
+    }
+
     const updated = await prisma.user.update({
       where: { id: existing.id },
       data: { supabaseId },
       select: userSelect,
     });
+
     return { user: updated };
   }
 
@@ -103,6 +129,7 @@ export const auth = cache(async (): Promise<Session> => {
       },
       select: userSelect,
     });
+
     return { user: created };
   } catch (err) {
     // Two requests raced to create the same user: use the winner's row.
@@ -110,7 +137,11 @@ export const auth = cache(async (): Promise<Session> => {
       where: { supabaseId },
       select: userSelect,
     });
-    if (winner) return { user: winner };
+
+    if (winner) {
+      return { user: winner };
+    }
+
     throw err;
   }
 });

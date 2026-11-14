@@ -1,9 +1,10 @@
+
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 // Fast first gate, not the only one: every admin page/action still calls
 // requireAdmin() (src/lib/actions/require-admin.ts), which checks the
-// Prisma User role. Middleware alone is never trusted.
+// Prisma User role. Middleware/Proxy alone is never trusted.
 //
 // Admin marker: app_metadata.app_role = "admin" on the Supabase user.
 // app_metadata can only be changed with the service role / SQL editor,
@@ -20,7 +21,7 @@ function withSessionCookies(from: NextResponse, to: NextResponse) {
   return to;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { response, claims } = await updateSession(request);
   const { pathname, search } = request.nextUrl;
 
@@ -42,6 +43,7 @@ export async function middleware(request: NextRequest) {
       NextResponse.json({ ok: false }, { status: 401 })
     );
   }
+
   if (isAdminArea && !isAdmin) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
@@ -58,6 +60,7 @@ export async function middleware(request: NextRequest) {
     url.searchParams.set("from", pathname + search);
     return withSessionCookies(response, NextResponse.redirect(url));
   }
+
   return response;
 }
 

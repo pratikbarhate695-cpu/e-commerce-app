@@ -14,10 +14,27 @@ export default async function EditProductPage({
   const { id } = await params;
 
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id }, include: { images: { orderBy: { sortOrder: "asc" } } } }),
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
+    prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: {
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+    }),
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+    }),
   ]);
+
   if (!product) notFound();
+
+  const productForForm = {
+    ...product,
+    mrp: product.mrp.toString(),
+    sellingPrice: product.sellingPrice.toString(),
+    discountPct: product.discountPct.toString(),
+  };
 
   const updateWithId = updateProduct.bind(null, product.id);
 
@@ -25,7 +42,12 @@ export default async function EditProductPage({
     <div>
       <AdminHeader title={`Edit — ${product.name}`} />
       <div className="px-8 py-6">
-        <ProductForm mode="edit" categories={categories} product={product} action={updateWithId} />
+        <ProductForm
+          mode="edit"
+          categories={categories}
+          product={productForForm}
+          action={updateWithId}
+        />
       </div>
     </div>
   );

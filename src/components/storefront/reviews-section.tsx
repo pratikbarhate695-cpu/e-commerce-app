@@ -36,12 +36,12 @@ export function ReviewsSection({
           <>
             <span className="text-3xl font-medium">{feedback.average.toFixed(1)}</span>
             <Stars value={feedback.average} className="h-5 w-5" />
-            <span className="text-sm text-ink/60">
+            <span className="text-sm text-ink/65">
               {feedback.count} review{feedback.count > 1 ? "s" : ""}
             </span>
           </>
         ) : (
-          <p className="text-sm text-ink/60">No reviews yet. Be the first to review this product.</p>
+          <p className="text-sm text-ink/65">No reviews yet. Be the first to review this product.</p>
         )}
       </div>
 
@@ -54,7 +54,7 @@ export function ReviewsSection({
             to write a review.
           </p>
         ) : hasReviewed ? (
-          <p className="text-sm text-ink/60">You have already reviewed this product. Thank you!</p>
+          <p className="text-sm text-ink/65">You have already reviewed this product. Thank you!</p>
         ) : (
           <details className="group">
             <summary className="inline-block cursor-pointer border border-ink px-5 py-2 text-sm font-medium hover:bg-ink hover:text-paper">
@@ -74,7 +74,7 @@ export function ReviewsSection({
               <Stars value={r.rating} />
               {r.title && <span className="font-medium">{r.title}</span>}
             </div>
-            <p className="mt-1 text-xs text-ink/50">
+            <p className="mt-1 text-xs text-ink/65">
               {publicName(r.user.name)} · {dateLabel(r.createdAt)}
               {r.isVerified && <span className="ml-2 text-accent">✓ Verified purchase</span>}
             </p>
@@ -114,7 +114,7 @@ export function ReviewsSection({
       </div>
 
       {feedback.questions.length === 0 ? (
-        <p className="mt-8 text-sm text-ink/60">No questions yet.</p>
+        <p className="mt-8 text-sm text-ink/65">No questions yet.</p>
       ) : (
         <ul className="mt-8 space-y-6">
           {feedback.questions.map((q) => (
@@ -122,7 +122,7 @@ export function ReviewsSection({
               <p>
                 <span className="font-medium">Q:</span> {q.question}
               </p>
-              <p className="mt-0.5 text-xs text-ink/50">
+              <p className="mt-0.5 text-xs text-ink/65">
                 {publicName(q.user.name)} · {dateLabel(q.createdAt)}
               </p>
               {q.answer ? (
@@ -130,7 +130,7 @@ export function ReviewsSection({
                   <span className="font-medium">Seller answer:</span> {q.answer}
                 </p>
               ) : (
-                <p className="mt-2 pl-3 text-ink/50">Waiting for an answer.</p>
+                <p className="mt-2 pl-3 text-ink/65">Waiting for an answer.</p>
               )}
             </li>
           ))}

@@ -8,11 +8,11 @@ type Props = {
 
 export function ProductGrid({ products, emptyMessage = "No products found." }: Props) {
   if (products.length === 0) {
-    return <p className="py-16 text-center text-sm text-ink/50">{emptyMessage}</p>;
+    return <p className="py-16 text-center text-sm text-ink/65">{emptyMessage}</p>;
   }
 
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3.5 sm:gap-5 lg:grid-cols-4">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

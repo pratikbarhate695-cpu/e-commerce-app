@@ -3,10 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-
 model User {
   id                String               @id @default(cuid())
   email             String               @unique
@@ -235,14 +235,15 @@ model OrderStatusHistory {
 }
 
 model Payment {
-  id          String                @id @default(cuid())
-  orderId     String
-  provider    String
-  amount      Decimal               @db.Decimal(10, 2)
-  status      PaymentProviderStatus @default(CREATED)
-  providerRef String?
-  createdAt   DateTime              @default(now())
-  order       Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id                String                @id @default(cuid())
+  orderId           String
+  provider          String
+  amount            Decimal               @db.Decimal(10, 2)
+  status            PaymentProviderStatus @default(CREATED)
+  providerRef       String?
+  providerPaymentId String?               @unique
+  createdAt         DateTime              @default(now())
+  order             Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
 }
@@ -297,6 +298,14 @@ model HomepageBanner {
   title     String?
   sortOrder Int     @default(0)
   isActive  Boolean @default(true)
+
+  // Added for hero management. Every new column is optional or has a default, so
+  // existing rows keep working: they become "PROMO" banners (the strip below the hero).
+  kind          String  @default("PROMO") // "HERO" (top of the homepage) or "PROMO"
+  subtitle      String?
+  buttonText    String?
+  altText       String?
+  imagePublicId String? // Cloudinary id, so a replaced or removed image can be cleaned up
 }
 
 model StoreSettings {

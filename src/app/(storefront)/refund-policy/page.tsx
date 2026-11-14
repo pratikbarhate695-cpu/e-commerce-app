@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: `Refund and Return Policy | ${SITE.na
 
 export default function RefundPolicyPage() {
   return (
-    <LegalPage title="Refund and Return Policy">
+    <LegalPage title="Refund and Return Policy" updated={SITE.policyUpdated.refund}>
       <p>
         We want you to be happy with your purchase from {SITE.name}. This policy
         explains when you can return a product and how refunds work.
@@ -14,8 +14,10 @@ export default function RefundPolicyPage() {
 
       <h2>Return window</h2>
       <p>
-        You can request a return or replacement within {SITE.returnDays} days of
-        delivery. Requests made after {SITE.returnDays} days may not be accepted.
+        You can request a return or replacement within {SITE.returnDays} days
+        after you receive the parcel (counted from the delivery date). Requests
+        made after {SITE.returnDays} days may not be accepted. The return window
+        is separate from the product warranty described below.
       </p>
 
       <h2>When you can return</h2>
@@ -36,7 +38,7 @@ export default function RefundPolicyPage() {
 
       <h2>How to request a return</h2>
       <ul>
-        <li>Email {SITE.email} or call {SITE.phone} within {SITE.returnDays} days of delivery.</li>
+        <li>Email {SITE.email} or call {SITE.phone} within {SITE.returnDays} days after you receive the parcel.</li>
         <li>Share your order number, the reason, and photos or video where needed.</li>
         <li>After we approve the request, we will tell you how to send the product back or arrange a pickup.</li>
       </ul>
@@ -58,10 +60,10 @@ export default function RefundPolicyPage() {
 
       <h2>Warranty</h2>
       <p>
-        Branded electronics carry the manufacturer&apos;s warranty. For issues
-        after the {SITE.returnDays}-day return window, the brand&apos;s
-        authorised service centre handles warranty repairs. We will help you
-        with the invoice and details you need.
+        Products come with a warranty of {SITE.warrantyDays} days only. The
+        warranty is separate from the {SITE.returnDays}-day return window above.
+        Please keep your invoice and order details ready when you contact us at{" "}
+        {SITE.email} or {SITE.phone}.
       </p>
 
       <h2>Contact</h2>

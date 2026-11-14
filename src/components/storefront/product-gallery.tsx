@@ -11,7 +11,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
 
   if (!current) {
     return (
-      <div className="aspect-square w-full bg-ink/[0.04] flex items-center justify-center text-sm text-ink/40">
+      <div className="aspect-square w-full rounded-2xl border border-ink/10 bg-white flex items-center justify-center text-sm text-slate-600">
         No image
       </div>
     );
@@ -19,7 +19,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
 
   return (
     <div>
-      <div className="aspect-square w-full overflow-hidden bg-ink/[0.04]">
+      <div className="aspect-square w-full overflow-hidden rounded-2xl border border-ink/10 bg-white p-3">
         <Image
           key={current.id}
           src={current.url}
@@ -38,7 +38,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
               type="button"
               onClick={() => setActive(i)}
               aria-label={`Show image ${i + 1}`}
-              className={`h-16 w-16 shrink-0 overflow-hidden border bg-ink/[0.04] ${
+              className={`h-16 w-16 shrink-0 overflow-hidden rounded-xl border bg-white ${
                 i === active ? "border-ink" : "border-ink/20 opacity-70 hover:opacity-100"
               }`}
             >

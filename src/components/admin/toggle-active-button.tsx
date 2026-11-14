@@ -25,7 +25,7 @@ export function ToggleActiveButton({
           router.refresh();
         })
       }
-      className="text-xs underline underline-offset-4 text-ink/60 hover:text-ink disabled:opacity-50"
+      className="text-xs underline underline-offset-4 text-ink/65 hover:text-ink disabled:opacity-50"
     >
       {isActive ? "Deactivate" : "Activate"}
     </button>

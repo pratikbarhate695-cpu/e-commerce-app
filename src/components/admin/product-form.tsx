@@ -1,7 +1,8 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { Category, Product, ProductImage } from "@prisma/client";
@@ -21,7 +22,12 @@ const initialState: AdminActionResult = { ok: true };
 type Props = {
   mode: "new" | "edit";
   categories: Category[];
-  product?: Product & { images: ProductImage[] };
+  product?: Omit<Product, "mrp" | "sellingPrice" | "discountPct"> & {
+  mrp: string;
+  sellingPrice: string;
+  discountPct: string;
+  images: ProductImage[];
+};
   action: (
     state: AdminActionResult,
     formData: FormData
@@ -30,20 +36,30 @@ type Props = {
 
 export function ProductForm({ mode, categories, product, action }: Props) {
   const router = useRouter();
-  const [state, formAction] = useFormState(action, initialState);
-  // Changing this key empties the image picker after a successful save,
-  // so the same images are not uploaded twice.
+
   const [pickerKey, setPickerKey] = useState(0);
 
-  useEffect(() => {
-    if (state !== initialState && state.ok) setPickerKey((k) => k + 1);
-  }, [state]);
+  const handleAction = useCallback(
+    async (prevState: AdminActionResult, formData: FormData) => {
+      const result = await action(prevState, formData);
+
+      if (result.ok) {
+        setPickerKey((key) => key + 1);
+      }
+
+      return result;
+    },
+    [action]
+  );
+
+  const [state, formAction] = useActionState(handleAction, initialState);
 
   useEffect(() => {
     if (state.ok && state.created && mode === "new") {
       router.push("/admin/products");
     }
   }, [state, mode, router]);
+
 
   return (
     <form action={formAction} className="max-w-2xl space-y-6">
@@ -139,8 +155,8 @@ export function ProductForm({ mode, categories, product, action }: Props) {
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <span className="text-sm text-ink/60">Current stock</span>
-            <p className="mt-1 border border-transparent px-3 py-2 text-sm text-ink/50">
+            <span className="text-sm text-ink/65">Current stock</span>
+            <p className="mt-1 border border-transparent px-3 py-2 text-sm text-ink/65">
               {product?.stockQty} — adjust from the Inventory panel
             </p>
           </div>
@@ -161,7 +177,7 @@ export function ProductForm({ mode, categories, product, action }: Props) {
 
       {mode === "edit" && product && product.images.length > 0 && (
         <div>
-          <span className="text-sm text-ink/60">Current images</span>
+          <span className="text-sm text-ink/65">Current images</span>
           <div className="mt-2 flex flex-wrap gap-3">
             {product.images.map((img) => (
               <div key={img.id} className="relative">
@@ -191,7 +207,7 @@ export function ProductForm({ mode, categories, product, action }: Props) {
         name="images"
         max={10}
         label={mode === "new" ? "Images" : "Add images"}
-        hint="Click Add again to pick more images. The first image is the main one."
+        hint="Up to 10 JPG, PNG or WebP images; 4 MB total. The first image is the main one."
       />
 
       {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}

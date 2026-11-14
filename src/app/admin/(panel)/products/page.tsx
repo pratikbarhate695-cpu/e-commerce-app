@@ -51,7 +51,7 @@ export default async function AdminProductsPage({
 
         <table className="mt-6 w-full text-sm">
           <thead>
-            <tr className="border-b border-ink/10 text-left text-ink/50">
+            <tr className="border-b border-ink/10 text-left text-ink/65">
               <th className="py-2 font-normal">Product</th>
               <th className="py-2 font-normal">Category</th>
               <th className="py-2 font-normal">Price</th>
@@ -70,7 +70,7 @@ export default async function AdminProductsPage({
                   >
                     {product.name}
                   </Link>
-                  <p className="text-xs text-ink/40">{product.sku}</p>
+                  <p className="text-xs text-ink/65">{product.sku}</p>
                 </td>
                 <td className="py-3 text-ink/70">{product.category.name}</td>
                 <td className="py-3 text-ink/70">{formatMoney(product.sellingPrice)}</td>
@@ -100,7 +100,7 @@ export default async function AdminProductsPage({
         </table>
 
         {products.length === 0 && (
-          <p className="mt-8 text-sm text-ink/50">No products found.</p>
+          <p className="mt-8 text-sm text-ink/65">No products found.</p>
         )}
       </div>
     </div>

@@ -18,7 +18,7 @@ export default async function CategoriesPage() {
         <div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-ink/10 text-left text-ink/50">
+              <tr className="border-b border-ink/10 text-left text-ink/65">
                 <th className="py-2 font-normal">Name</th>
                 <th className="py-2 font-normal">Parent</th>
                 <th className="py-2 font-normal">Products</th>
@@ -28,18 +28,18 @@ export default async function CategoriesPage() {
               {categories.map((c) => (
                 <tr key={c.id} className="border-b border-ink/5">
                   <td className="py-2">{c.name}</td>
-                  <td className="py-2 text-ink/60">{c.parent?.name ?? "—"}</td>
-                  <td className="py-2 text-ink/60">{c._count.products}</td>
+                  <td className="py-2 text-ink/65">{c.parent?.name ?? "—"}</td>
+                  <td className="py-2 text-ink/65">{c._count.products}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {categories.length === 0 && (
-            <p className="mt-4 text-sm text-ink/50">No categories yet.</p>
+            <p className="mt-4 text-sm text-ink/65">No categories yet.</p>
           )}
         </div>
         <div>
-          <h2 className="mb-4 text-sm text-ink/60">Add a category</h2>
+          <h2 className="mb-4 text-sm text-ink/65">Add a category</h2>
           <CategoryForm categories={categories} />
         </div>
       </div>

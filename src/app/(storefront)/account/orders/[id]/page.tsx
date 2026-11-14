@@ -93,7 +93,7 @@ export default async function OrderDetailPage({
     <main className="mx-auto max-w-2xl px-6 py-12 sm:py-16">
       <Link
         href="/account/orders"
-        className="text-sm text-ink/60 underline underline-offset-4 hover:text-ink"
+        className="text-sm text-ink/65 underline underline-offset-4 hover:text-ink"
       >
         Back to my orders
       </Link>
@@ -122,20 +122,20 @@ export default async function OrderDetailPage({
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm text-ink/50">Order {order.orderNumber}</p>
+          <p className="text-sm text-ink/65">Order {order.orderNumber}</p>
           <h1 className="mt-1 font-serif text-3xl">
             {placed && order.paymentStatus === "PAID" ? "Thank you" : "Order details"}
           </h1>
         </div>
         <StatusBadge status={order.status} />
       </div>
-      <p className="mt-2 text-sm text-ink/60">
+      <p className="mt-2 text-sm text-ink/65">
         Placed on {formatDateTime(order.createdAt, { year: true })}
       </p>
       {deliverySummary && <p className="mt-1 text-sm text-ink">{deliverySummary}</p>}
 
       <section className="mt-10" aria-labelledby="tracking-heading">
-        <h2 id="tracking-heading" className="text-sm text-ink/60">
+        <h2 id="tracking-heading" className="text-sm text-ink/65">
           Order tracking
         </h2>
         <div className="mt-5">
@@ -145,25 +145,25 @@ export default async function OrderDetailPage({
 
       {showDeliverySection && (
         <section className="mt-10 border-t border-ink/10 pt-6">
-          <h2 className="text-sm text-ink/60">Delivery</h2>
+          <h2 className="text-sm text-ink/65">Delivery</h2>
           {hasShipmentInfo ? (
             <>
               <dl className="mt-4 space-y-2 text-sm">
                 {order.courierName && (
                   <div className="flex justify-between gap-4">
-                    <dt className="text-ink/60">Courier</dt>
+                    <dt className="text-ink/65">Courier</dt>
                     <dd className="text-right">{order.courierName}</dd>
                   </div>
                 )}
                 {order.trackingNumber && (
                   <div className="flex justify-between gap-4">
-                    <dt className="text-ink/60">Tracking ID</dt>
+                    <dt className="text-ink/65">Tracking ID</dt>
                     <dd className="break-all text-right">{order.trackingNumber}</dd>
                   </div>
                 )}
                 {order.estimatedDelivery && order.status !== "DELIVERED" && (
                   <div className="flex justify-between gap-4">
-                    <dt className="text-ink/60">Expected delivery</dt>
+                    <dt className="text-ink/65">Expected delivery</dt>
                     <dd className="text-right">{formatDate(order.estimatedDelivery)}</dd>
                   </div>
                 )}
@@ -180,7 +180,7 @@ export default async function OrderDetailPage({
               )}
             </>
           ) : (
-            <p className="mt-3 text-sm text-ink/60">
+            <p className="mt-3 text-sm text-ink/65">
               Courier and tracking details will appear here once your order ships.
             </p>
           )}
@@ -188,7 +188,7 @@ export default async function OrderDetailPage({
       )}
 
       <section className="mt-10 border-t border-ink/10 pt-6">
-        <h2 className="text-sm text-ink/60">Items</h2>
+        <h2 className="text-sm text-ink/65">Items</h2>
         <div className="mt-4 divide-y divide-ink/10">
           {order.items.map((item) => {
             const image = item.product.images[0];
@@ -207,7 +207,7 @@ export default async function OrderDetailPage({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm">{item.productNameSnapshot}</p>
-                  <p className="mt-1 text-sm text-ink/50">
+                  <p className="mt-1 text-sm text-ink/65">
                     Qty {item.quantity} × {formatMoney(item.unitPriceAtPurchase)}
                   </p>
                 </div>
@@ -218,21 +218,21 @@ export default async function OrderDetailPage({
         </div>
 
         <div className="mt-2 space-y-1 border-t border-ink/10 pt-4 text-sm">
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Subtotal</span>
             <span>{formatMoney(order.subtotal)}</span>
           </div>
           {Number(order.discountTotal) > 0 && (
-            <div className="flex justify-between text-ink/60">
+            <div className="flex justify-between text-ink/65">
               <span>Discount</span>
               <span>-{formatMoney(order.discountTotal)}</span>
             </div>
           )}
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Shipping</span>
             <span>{formatMoney(order.shippingFee)}</span>
           </div>
-          <div className="flex justify-between text-ink/60">
+          <div className="flex justify-between text-ink/65">
             <span>Tax</span>
             <span>{formatMoney(order.taxTotal)}</span>
           </div>
@@ -244,7 +244,7 @@ export default async function OrderDetailPage({
       </section>
 
       <section className="mt-10 border-t border-ink/10 pt-6">
-        <h2 className="text-sm text-ink/60">Payment</h2>
+        <h2 className="text-sm text-ink/65">Payment</h2>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
           <span>{paymentMethodLabel(order.paymentMethod)}</span>
           <PaymentBadge status={order.paymentStatus} method={order.paymentMethod} />
@@ -253,7 +253,7 @@ export default async function OrderDetailPage({
 
       {address.success && (
         <section className="mt-10 border-t border-ink/10 pt-6">
-          <h2 className="text-sm text-ink/60">Delivering to</h2>
+          <h2 className="text-sm text-ink/65">Delivering to</h2>
           <address className="mt-3 text-sm not-italic leading-relaxed text-ink/80">
             {address.data.fullName}
             <br />

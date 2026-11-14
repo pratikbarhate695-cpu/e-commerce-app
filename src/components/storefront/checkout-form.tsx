@@ -36,7 +36,7 @@ export function CheckoutForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-8">
       <fieldset className="space-y-5">
-        <legend className="mb-1 text-sm text-ink/60">Shipping address</legend>
+        <legend className="mb-1 text-sm text-ink/65">Shipping address</legend>
         <Field label="Full name" name="fullName" required />
         <Field label="Phone" name="phone" type="tel" required />
         <Field label="Address line 1" name="line1" required />
@@ -49,7 +49,7 @@ export function CheckoutForm() {
       </fieldset>
 
       <fieldset>
-        <legend className="mb-2 text-sm text-ink/60">Payment method</legend>
+        <legend className="mb-2 text-sm text-ink/65">Payment method</legend>
         <input type="hidden" name="paymentMethod" value="RAZORPAY" />
         <p className="text-sm text-ink/80">
           Pay online with UPI, card or net banking. Your order is shipped after

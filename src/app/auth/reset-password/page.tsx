@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
           Set New Password
         </h1>
 
-        <p className="text-sm text-ink/60 mb-6">
+        <p className="text-sm text-ink/65 mb-6">
           Enter your new password below.
         </p>
 

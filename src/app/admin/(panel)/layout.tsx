@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
+import { SITE } from "@/lib/site";
 
 const links = [
   { href: "/admin/dashboard", label: "Dashboard" },
@@ -29,20 +30,21 @@ export default async function AdminPanelLayout({
   async function signOutAction() {
     "use server";
     // scope "local": sign out this device only, not every session.
-    await createClient().auth.signOut({ scope: "local" });
+    const supabase = await createClient();
+    await supabase.auth.signOut({ scope: "local" });
     redirect("/admin/login");
   }
 
   return (
-    <div className="flex min-h-screen">
-      <nav className="flex w-56 shrink-0 flex-col border-r border-ink/10 bg-ink/[0.02] px-4 py-8">
-        <p className="px-2 text-sm text-ink/50">Admin</p>
-        <ul className="mt-4 flex-1 space-y-1">
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      <nav aria-label="Admin navigation" className="flex w-full shrink-0 flex-col border-b border-ink/10 bg-ink/[0.025] px-3 py-3 lg:w-60 lg:border-b-0 lg:border-r lg:px-4 lg:py-8">
+        <p className="px-2 text-xs font-bold uppercase tracking-[0.16em] text-ink/65">{SITE.name} · Admin</p>
+        <ul className="mt-3 flex gap-1 overflow-x-auto pb-1 lg:mt-5 lg:flex-1 lg:flex-col lg:overflow-visible">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block rounded px-2 py-1.5 text-sm text-ink/80 hover:bg-ink/[0.05]"
+                className="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-ink/75 transition hover:bg-accent/10 hover:text-accent"
               >
                 {link.label}
               </Link>
@@ -52,7 +54,7 @@ export default async function AdminPanelLayout({
         <form action={signOutAction}>
           <button
             type="submit"
-            className="w-full rounded px-2 py-1.5 text-left text-sm text-ink/50 hover:bg-ink/[0.05]"
+            className="mt-2 w-full shrink-0 rounded-lg px-3 py-2 text-left text-sm font-medium text-ink/65 transition hover:bg-ink/[0.05]"
           >
             Sign out
           </button>

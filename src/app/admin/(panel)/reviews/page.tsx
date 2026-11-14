@@ -24,7 +24,7 @@ export default async function AdminReviewsPage() {
     <div>
       <AdminHeader title="Reviews" />
       <div className="max-w-3xl space-y-6 p-8">
-        {reviews.length === 0 && <p className="text-sm text-ink/60">No reviews yet.</p>}
+        {reviews.length === 0 && <p className="text-sm text-ink/65">No reviews yet.</p>}
 
         {reviews.map((r) => (
           <div key={r.id} className={`border border-ink/10 p-4 ${r.isHidden ? "opacity-60" : ""}`}>
@@ -34,7 +34,7 @@ export default async function AdminReviewsPage() {
               {r.isVerified && <span className="text-xs text-accent">Verified purchase</span>}
               {r.isHidden && <span className="text-xs text-red-700 dark:text-red-300">Hidden from the website</span>}
             </div>
-            <p className="mt-1 text-xs text-ink/50">
+            <p className="mt-1 text-xs text-ink/65">
               <Link href={`/product/${r.product.slug}`} className="underline">
                 {r.product.name}
               </Link>{" "}

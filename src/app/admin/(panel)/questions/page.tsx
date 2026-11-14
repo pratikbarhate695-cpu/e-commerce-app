@@ -31,7 +31,7 @@ function QuestionCard({ q }: { q: QuestionRow }) {
       <p className="text-sm">
         <span className="font-medium">Q:</span> {q.question}
       </p>
-      <p className="mt-1 text-xs text-ink/50">
+      <p className="mt-1 text-xs text-ink/65">
         <Link href={`/product/${q.product.slug}`} className="underline">
           {q.product.name}
         </Link>{" "}
@@ -89,7 +89,7 @@ export default async function AdminQuestionsPage() {
         <section>
           <h2 className="text-sm font-medium">Waiting for an answer ({unanswered.length})</h2>
           <div className="mt-4 space-y-4">
-            {unanswered.length === 0 && <p className="text-sm text-ink/60">No new questions.</p>}
+            {unanswered.length === 0 && <p className="text-sm text-ink/65">No new questions.</p>}
             {unanswered.map((q) => (
               <QuestionCard key={q.id} q={q} />
             ))}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Wireless mouse">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4252"/><stop offset=".55" stop-color="#1b202b"/><stop offset="1" stop-color="#0b0e15"/></linearGradient>
+<linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef1f6"/><stop offset=".55" stop-color="#a7b0bf"/><stop offset="1" stop-color="#d3d9e3"/></linearGradient>
+<linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#0f172a" flood-opacity=".28"/></filter>
+</defs>
+<ellipse cx="200" cy="352" rx="130" ry="13" fill="#0f172a" opacity=".13"/>
+<g filter="url(#sh)">
+<path d="M200 70 C262 70 292 118 292 190 C292 276 262 332 200 332 C138 332 108 276 108 190 C108 118 138 70 200 70Z" fill="url(#g)"/>
+<path d="M200 70 V178" stroke="#05070c" stroke-width="3"/><path d="M108 190 C128 176 172 176 200 178 C228 176 272 176 292 190" fill="none" stroke="#05070c" stroke-width="3"/>
+<rect x="188" y="104" width="24" height="46" rx="12" fill="url(#b)"/>
+<path d="M126 120 C140 88 170 78 194 78" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="3"/>
+<circle cx="200" cy="296" r="6" fill="#60a5fa" opacity=".8"/></g>
+</svg>

@@ -8,7 +8,9 @@ export default async function InventoryPage() {
   await requireAdmin();
 
   const [products, history] = await Promise.all([
-    prisma.product.findMany({ orderBy: { stockQty: "asc" } }),
+    prisma.product.findMany({
+      orderBy: { stockQty: "asc" },
+    }),
     prisma.inventoryHistory.findMany({
       include: { product: true, admin: true },
       orderBy: { createdAt: "desc" },
@@ -16,24 +18,33 @@ export default async function InventoryPage() {
     }),
   ]);
 
+  const productsForForm = products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    stockQty: product.stockQty,
+  }));
+
   return (
     <div>
       <AdminHeader title="Inventory" />
+
       <div className="grid grid-cols-1 gap-10 px-8 py-6 sm:grid-cols-2">
         <div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-ink/10 text-left text-ink/50">
+              <tr className="border-b border-ink/10 text-left text-ink/65">
                 <th className="py-2 font-normal">Product</th>
                 <th className="py-2 font-normal">Stock</th>
               </tr>
             </thead>
+
             <tbody>
               {products.map((p) => (
                 <tr key={p.id} className="border-b border-ink/5">
                   <td className="py-2">{p.name}</td>
                   <td className="py-2">
                     {p.stockQty}
+
                     {p.stockQty <= p.lowStockThreshold && (
                       <span className="ml-2">
                         <Badge tone={p.stockQty === 0 ? "bad" : "warn"}>
@@ -47,10 +58,13 @@ export default async function InventoryPage() {
             </tbody>
           </table>
 
-          <h2 className="mb-3 mt-10 text-sm text-ink/60">Recent changes</h2>
+          <h2 className="mb-3 mt-10 text-sm text-ink/65">
+            Recent changes
+          </h2>
+
           <div className="space-y-2">
             {history.map((h) => (
-              <div key={h.id} className="text-xs text-ink/60">
+              <div key={h.id} className="text-xs text-ink/65">
                 <span className="text-ink/80">{h.product.name}</span>{" "}
                 {h.quantityChanged > 0 ? "+" : ""}
                 {h.quantityChanged} ({h.reason.toLowerCase()})
@@ -58,14 +72,16 @@ export default async function InventoryPage() {
                 {h.createdAt.toLocaleString()}
               </div>
             ))}
+
             {history.length === 0 && (
-              <p className="text-sm text-ink/50">No changes yet.</p>
+              <p className="text-sm text-ink/65">No changes yet.</p>
             )}
           </div>
         </div>
+
         <div>
-          <h2 className="mb-4 text-sm text-ink/60">Adjust stock</h2>
-          <InventoryAdjustForm products={products} />
+          <h2 className="mb-4 text-sm text-ink/65">Adjust stock</h2>
+          <InventoryAdjustForm products={productsForForm} />
         </div>
       </div>
     </div>

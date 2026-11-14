@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import type { Product } from "@prisma/client";
 import { AdminField, AdminSelect } from "@/components/admin/fields";
 import { AdminSubmitButton } from "@/components/admin/submit-button";
@@ -9,8 +9,14 @@ import type { AdminActionResult } from "@/lib/actions/admin/products";
 
 const initialState: AdminActionResult = { ok: true };
 
-export function InventoryAdjustForm({ products }: { products: Product[] }) {
-  const [state, formAction] = useFormState(adjustProductStock, initialState);
+type InventoryProduct = Pick<Product, "id" | "name" | "stockQty">;
+
+export function InventoryAdjustForm({
+  products,
+}: {
+  products: InventoryProduct[];
+}) {
+  const [state, formAction] = useActionState(adjustProductStock, initialState);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
@@ -24,19 +30,27 @@ export function InventoryAdjustForm({ products }: { products: Product[] }) {
           </option>
         ))}
       </AdminSelect>
+
       <AdminField
         label="Quantity change (use a negative number to remove stock)"
         name="quantityChanged"
         type="number"
         required
       />
+
       <AdminSelect label="Reason" name="reason" defaultValue="NEW_STOCK">
         <option value="NEW_STOCK">New stock</option>
         <option value="ADJUSTMENT">Adjustment</option>
         <option value="DAMAGED">Damaged</option>
         <option value="RETURNED">Returned</option>
       </AdminSelect>
-      {!state.ok && <p className="text-sm text-red-700 dark:text-red-300">{state.error}</p>}
+
+      {!state.ok && (
+        <p className="text-sm text-red-700 dark:text-red-300">
+          {state.error}
+        </p>
+      )}
+
       <AdminSubmitButton>Apply</AdminSubmitButton>
     </form>
   );

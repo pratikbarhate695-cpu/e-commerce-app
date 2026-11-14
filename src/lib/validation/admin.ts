@@ -97,7 +97,6 @@ export const orderStatusOptions = [
   "DELIVERED",
   "CANCELLED",
   "RETURNED",
-  "REFUNDED",
 ] as const;
 
 export const orderStatusUpdateSchema = z.object({

@@ -1,12 +1,10 @@
-import "server-only";
+﻿import "server-only";
 import type { Prisma, InventoryReason } from "@prisma/client";
+import { adjustStockCore } from "@/lib/inventory-core";
 
 /**
- * Decrements (or increments, for reason=RETURNED/ADJUSTMENT with a positive
- * delta) a product's stock and writes the audit row in the same statement
- * set. Must be called with a transaction client (`tx`), never the bare
- * `prisma` client, so it always lands atomically with whatever else the
- * caller is doing (order creation, admin edit).
+ * Adjusts product stock and records inventory history.
+ * Must always receive a Prisma transaction client.
  */
 export async function adjustStock(
   tx: Prisma.TransactionClient,
@@ -14,29 +12,27 @@ export async function adjustStock(
   quantityChanged: number,
   reason: InventoryReason,
   adminId?: string
-) {
-  // One atomic update (no read-then-write), so two requests can't overwrite each other.
-  // If the result is below zero we throw, which rolls back the whole transaction.
-  const updated = await tx.product.update({
-    where: { id: productId },
-    data: { stockQty: { increment: quantityChanged } },
-  });
-  const newStock = updated.stockQty;
+): Promise<number> {
+  return adjustStockCore<InventoryReason>(
+    {
+      updateProductStock: async (id, quantity) => {
+        const updated = await tx.product.update({
+          where: { id },
+          data: { stockQty: { increment: quantity } },
+        });
 
-  if (newStock < 0) {
-    throw new Error(`Stock adjustment would take "${updated.name}" below zero.`);
-  }
-
-  await tx.inventoryHistory.create({
-    data: {
-      productId,
-      previousStock: newStock - quantityChanged,
-      newStock,
-      quantityChanged,
-      reason,
-      adminId,
+        return {
+          name: updated.name,
+          stockQty: updated.stockQty,
+        };
+      },
+      createInventoryHistory: async (data) => {
+        return tx.inventoryHistory.create({ data });
+      },
     },
-  });
-
-  return newStock;
+    productId,
+    quantityChanged,
+    reason,
+    adminId
+  );
 }
