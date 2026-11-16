@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { getCategoryTree } from "@/lib/category-data";
 
-const SITE_URL = "https://zerointegration.netlify.app";
+const SITE_URL = "https://maquatom.netlify.app";
 
 export const dynamic = "force-dynamic";
 
