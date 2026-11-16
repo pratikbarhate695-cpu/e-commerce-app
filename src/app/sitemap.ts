@@ -1,13 +1,13 @@
-
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { getCategoryTree } from "@/lib/category-data";
 
 const SITE_URL = "https://zerointegration.netlify.app";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, categories] = await Promise.all([
+  const [products, categoryTree] = await Promise.all([
     prisma.product.findMany({
       where: { isActive: true },
       select: {
@@ -15,11 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         updatedAt: true,
       },
     }),
-    prisma.category.findMany({
-      select: {
-        slug: true,
-      },
-    }),
+    getCategoryTree(),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -60,13 +56,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const categoryRoutes: MetadataRoute.Sitemap = categories.map(
-    (category) => ({
+  const categoryRoutes: MetadataRoute.Sitemap = [
+    ...categoryTree.bySlug.values(),
+  ]
+    .filter((category) => category.totalCount > 0)
+    .map((category) => ({
       url: `${SITE_URL}/category/${encodeURIComponent(category.slug)}`,
       changeFrequency: "weekly",
       priority: 0.7,
-    })
-  );
+    }));
 
   const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${SITE_URL}/product/${encodeURIComponent(product.slug)}`,
