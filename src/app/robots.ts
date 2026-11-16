@@ -1,7 +1,7 @@
 
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://zerointegration.netlify.app";
+const SITE_URL = "https://maquatom.netlify.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
