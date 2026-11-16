@@ -38,8 +38,10 @@ export type HeroSlideData = {
 };
 
 /** Height of the hero. Shared so the admin preview is the same size visitors see. */
+
 export const HERO_FRAME_CLASS =
-  "relative isolate h-[420px] w-full overflow-hidden bg-[#050b16] text-white sm:h-[480px] lg:h-[560px]";
+  "relative isolate h-[240px] w-full overflow-hidden bg-[#050b16] text-white sm:h-[480px] lg:h-[560px]";
+
 
 /**
  * One hero slide. It fills its parent (the parent sets the size), puts the picture behind
@@ -79,7 +81,7 @@ export function HeroSlide({
         priority={priority}
         unoptimized={unoptimized}
         sizes="100vw"
-        className="object-cover"
+        className="object-contain sm:object-cover"
       />
 
       {hasText && (

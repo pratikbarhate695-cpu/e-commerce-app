@@ -43,7 +43,7 @@ test("homepage: a slide with a link but no text still gets a usable button", () 
 
 test("responsive: hero height steps down for phones and the carousel arrows are hidden on small screens", () => {
   const c = read("components/storefront/hero-banners.tsx");
-  assert.match(c, /h-\[420px\][^"]*sm:h-\[480px\][^"]*lg:h-\[560px\]/);
+  assert.match(c, /h-\[240px\][^"]*sm:h-\[480px\][^"]*lg:h-\[560px\]/);
   assert.match(c, /hidden[^"]*sm:flex/);
   assert.match(c, /prefers-reduced-motion/);
 });
