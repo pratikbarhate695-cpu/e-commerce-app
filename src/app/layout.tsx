@@ -12,11 +12,16 @@ const sans = Inter({
   variable: "--font-sans",
 });
 
-export const metadata = {
-  title: "Zero Integration",
-  description: "Shop authentic products at Zero Integration",
+export const metadata: Metadata = {
+  title: {
+    default: "Maquatom",
+    template: "%s | Maquatom",
+  },
+  description:
+    "Shop authentic electronics and technology products at Maquatom.",
+  applicationName: "Maquatom",
   verification: {
-    google: "TC8P5jQLG98QJ6wKiYOpnabfzSgB6wruWr4v6YeDrus",
+    google: "kjNmfEmB6l7ZeoDOkhN19EX9YB0BlT80fdbWt5McBG8",
   },
 };
 

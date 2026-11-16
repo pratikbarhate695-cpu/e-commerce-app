@@ -118,5 +118,5 @@ test("per-page policy dates: only edited pages carry the new date", () => {
   const get = (k: string) => block.match(new RegExp(`${k}:\\s*"([^"]+)"`))?.[1];
   assert.equal(get("privacy"), "12 October 2026");
   assert.equal(get("contact"), "12 October 2026");
-  for (const k of ["shipping", "refund", "terms"]) assert.equal(get(k), "25 October 2026", k);
+  for (const k of ["shipping", "refund", "terms"]) assert.equal(get(k), "16 November 2026", k);
 });
